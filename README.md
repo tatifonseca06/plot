@@ -4,9 +4,9 @@ Proyecto universitario para descubrir y organizar experiencias con amigos.
 
 ## Estado
 
-Primera entrega: estructura y dependencias, página de inicio provisional y API Express con `GET /api/health`. Express confirmado por la estudiante.
+Estructura y dependencias, pantallas de login y registro basadas en las referencias de Figma y API Express con `GET /api/health`. Express confirmado por la estudiante.
 
-Todavía no están implementados el login, CRUD, base de datos ni despliegue. La pantalla inicial no reproduce aún el diseño de Figma.
+La pantalla incluye campos obligatorios, validación HTML del correo y contraseña de al menos ocho caracteres, estilos para móvil y estados de foco. Todavía no están implementados la autenticación real, el registro, CRUD, base de datos ni despliegue. Los formularios explican al enviarse que el acceso y registro están pendientes; no envían ni almacenan credenciales. El registro está en `/registro`, incluye nombre completo y confirmación de contraseña, y está enlazado desde el login.
 
 ## Ejecutar
 
