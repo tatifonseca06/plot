@@ -18,9 +18,5 @@ export const experienceSchema = z.object({
   description: z.string().trim().min(1, "Escribe una descripción.").max(500),
 }).strict();
 export const idSchema = z.string().uuid("Identificador no válido.");
-export const paginationSchema = z.object({
-  page: z.coerce.number().int().min(1).max(100000).default(1),
-  pageSize: z.coerce.number().int().min(1).max(50).default(5),
-});
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;

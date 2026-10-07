@@ -28,10 +28,16 @@ export default function RegisterForm() {
     setPending(true);
     setMessage("");
     try {
-      await api("/auth/register", { method: "POST", body: JSON.stringify(Object.fromEntries(data)) });
+      await api("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(Object.fromEntries(data)),
+      });
       router.replace("/?registro=correcto");
-    } catch (error) { setMessage(errorMessage(error)); }
-    finally { setPending(false); }
+    } catch (error) {
+      setMessage(errorMessage(error));
+    } finally {
+      setPending(false);
+    }
   }
 
   function handleInput() {
@@ -41,36 +47,82 @@ export default function RegisterForm() {
 
   return (
     <>
-      <form className={styles.form} onSubmit={handleSubmit} onInput={handleInput}>
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit}
+        onInput={handleInput}
+      >
         <div className={styles.field}>
           <label htmlFor="full-name">Nombre completo</label>
-          <input id="full-name" name="fullName" type="text" autoComplete="name" placeholder="Ej. Sofía Martínez" pattern={".*\\S.*"} title="Escribe tu nombre; no puede contener solo espacios." maxLength={120} required />
+          <input
+            id="full-name"
+            name="fullName"
+            type="text"
+            autoComplete="name"
+            placeholder="Ej. Sofía Martínez"
+            pattern={".*\\S.*"}
+            title="Escribe tu nombre; no puede contener solo espacios."
+            maxLength={120}
+            required
+          />
         </div>
         <div className={styles.field}>
           <label htmlFor="email">Correo electrónico</label>
-          <input id="email" name="email" type="email" autoComplete="email" placeholder="tu@email.com" required />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="tu@email.com"
+            required
+          />
         </div>
         <div className={styles.field}>
           <label htmlFor="password">Contraseña</label>
-          <input ref={passwordRef} id="password" name="password" type="password" autoComplete="new-password" placeholder="Mínimo 8 caracteres" minLength={8} maxLength={128} required />
+          <input
+            ref={passwordRef}
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Mínimo 8 caracteres"
+            minLength={8}
+            maxLength={128}
+            required
+          />
         </div>
         <div className={styles.field}>
           <label htmlFor="confirm-password">Confirmar contraseña</label>
-          <input ref={confirmationRef} id="confirm-password" name="confirmPassword" type="password" autoComplete="new-password" placeholder="Repite tu contraseña" minLength={8} required />
+          <input
+            ref={confirmationRef}
+            id="confirm-password"
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Repite tu contraseña"
+            minLength={8}
+            required
+          />
         </div>
         <div className={styles.field}>
           <label htmlFor="role">Tipo de cuenta</label>
           <select id="role" name="role" defaultValue="PARTICIPANT">
-            <option value="PARTICIPANT">Participante — descubrir experiencias</option>
+            <option value="PARTICIPANT">
+              Participante — descubrir experiencias
+            </option>
             <option value="ORGANIZER">Organizador — crear experiencias</option>
           </select>
         </div>
-        <button className={styles.submit} type="submit" disabled={pending}>{pending ? "Creando cuenta…" : "Crear cuenta"}</button>
+        <button className={styles.submit} type="submit" disabled={pending}>
+          {pending ? "Creando cuenta…" : "Crear cuenta"}
+        </button>
       </form>
       <p className={styles.registration}>
         ¿Ya tienes cuenta? <Link href="/">Inicia sesión</Link>
       </p>
-      <p className={styles.feedback} role="status">{message}</p>
+      <p className={styles.feedback} role="status">
+        {message}
+      </p>
     </>
   );
 }

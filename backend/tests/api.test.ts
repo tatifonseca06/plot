@@ -114,8 +114,6 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async t => {
         assert.equal((await request("/experiences", "POST", { ...experience, ...change }, cookies[0])).status, 400);
       }
       assert.equal((await request("/experiences/no-uuid", "GET", undefined, cookies[0])).status, 400);
-      assert.equal((await request("/experiences?page=0", "GET", undefined, cookies[0])).status, 400);
-      assert.equal((await request("/experiences?pageSize=100", "GET", undefined, cookies[0])).status, 400);
     });
 
     await t.test("Las escrituras rechazan un origen distinto o ausente", async () => {
@@ -123,14 +121,14 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async t => {
       assert.equal((await request("/auth/logout", "POST", undefined, cookies[0], "")).status, 403);
     });
 
-    await t.test("La paginación conserva todos los registros sin repetirlos", async () => {
-      for (let i = 0; i < 5; i++) assert.equal((await request("/experiences", "POST", { ...experience, title: `Paginada ${i}` }, cookies[0])).status, 201);
-      const first = (await request("/experiences?page=1&pageSize=5", "GET", undefined, cookies[0])).payload.data;
-      const second = (await request("/experiences?page=2&pageSize=5", "GET", undefined, cookies[0])).payload.data;
-      assert.equal(first.total, 6);
-      assert.equal(first.items.length, 5);
-      assert.equal(second.items.length, 1);
-      assert.equal(new Set([...first.items, ...second.items].map(item => item.id)).size, 6);
+    await t.test("La lista devuelve todas las experiencias propias, sin límite de cinco", async () => {
+      for (let i = 0; i < 5; i++) assert.equal((await request("/experiences", "POST", { ...experience, title: `Experiencia ${i}` }, cookies[0])).status, 201);
+      const result = (await request("/experiences", "GET", undefined, cookies[0])).payload.data;
+      assert.equal(result.total, 6);
+      assert.equal(result.items.length, 6);
+      assert.equal(new Set(result.items.map((item: { id: string }) => item.id)).size, 6);
+      assert.ok(result.items.every((item: { ownerId: string }) => item.ownerId === userIds[0]));
+      assert.equal((await request("/experiences", "GET", undefined, cookies[1])).payload.data.total, 0);
     });
 
     await t.test("Sesión y datos sobreviven al reinicio del servidor HTTP", async () => {

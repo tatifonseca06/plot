@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { api, errorMessage } from "@/lib/api";
 import styles from "@/app/page.module.css";
 
-export default function LoginForm({ registered = false }: { registered?: boolean }) {
+export default function LoginForm({
+  registered = false,
+}: {
+  registered?: boolean;
+}) {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -18,38 +22,63 @@ export default function LoginForm({ registered = false }: { registered?: boolean
     setPending(true);
     setMessage("");
     try {
-      await api("/auth/login", { method: "POST", body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
+      await api("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: data.get("email"),
+          password: data.get("password"),
+        }),
+      });
       router.replace("/experiencias");
       router.refresh();
-    } catch (error) { setMessage(errorMessage(error)); }
-    finally { setPending(false); }
+    } catch (error) {
+      setMessage(errorMessage(error));
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
     <>
-      <div className={styles.notice}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-          <path d="M12 11v6M12 7v1" stroke="currentColor" strokeWidth="2" />
-        </svg>
-        <p>{registered ? "Cuenta creada correctamente. Ya puedes iniciar sesión." : "Inicia sesión para acceder a tus experiencias."}</p>
-      </div>
+      {registered && (
+        <p className={styles.notice} role="status">
+          Cuenta creada correctamente. Ya puedes iniciar sesión.
+        </p>
+      )}
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
           <label htmlFor="email">Correo electrónico</label>
-          <input id="email" name="email" type="email" autoComplete="email" placeholder="tu@email.com" required />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="tu@email.com"
+            required
+          />
         </div>
         <div className={styles.field}>
           <label htmlFor="password">Contraseña</label>
-          <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Mínimo 8 caracteres" minLength={8} required />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="Mínimo 8 caracteres"
+            minLength={8}
+            required
+          />
         </div>
-        <button className={styles.submit} type="submit" disabled={pending}>{pending ? "Ingresando…" : "Iniciar sesión"}</button>
+        <button className={styles.submit} type="submit" disabled={pending}>
+          {pending ? "Ingresando…" : "Iniciar sesión"}
+        </button>
       </form>
       <p className={styles.registration}>
-        ¿No tienes cuenta?{" "}
-        <Link href="/registro">Regístrate</Link>
+        ¿No tienes cuenta? <Link href="/registro">Regístrate</Link>
       </p>
-      <p className={styles.feedback} role="status">{message}</p>
+      <p className={styles.feedback} role="status">
+        {message}
+      </p>
     </>
   );
 }

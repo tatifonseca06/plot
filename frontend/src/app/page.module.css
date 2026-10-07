@@ -17,9 +17,6 @@
   color: white;
   background: #251d46;
 }
-.brand::before, .brand::after { content: ""; position: absolute; z-index: -1; width: 66%; aspect-ratio: 1; border-radius: 50%; }
-.brand::before { top: -15%; right: -24%; background: #4d3ba5; }
-.brand::after { bottom: -26%; left: -23%; background: #563853; }
 .logo { display: flex; align-items: center; gap: 13px; font-size: clamp(30px, 2.5vw, 48px); font-weight: 900; letter-spacing: -1.5px; }
 .logoIcon { display: grid; place-items: center; width: clamp(50px, 3.65vw, 74px); aspect-ratio: 1; border-radius: 38%; background: #7352fa; }
 .logoIcon svg { width: 64%; height: 64%; }
@@ -77,8 +74,6 @@
   .desktopBreak { display: none; }
   .description { margin-top: 20px; font-size: 18px; line-height: 1.6; }
   .tagline { font-size: 13px; }
-  .brand::before { width: 60%; top: -45%; right: -15%; }
-  .brand::after { width: 50%; bottom: -65%; }
   .access { padding: 42px 28px; }
   .content { max-width: 550px; }
   .notice { padding: 17px; border-radius: 15px; margin-bottom: 28px; }

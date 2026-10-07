@@ -1,17 +1,16 @@
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
 import { HttpError } from "../errors.js";
-import { experienceSchema, idSchema, paginationSchema } from "../validations.js";
+import { experienceSchema, idSchema } from "../validations.js";
 
 // El usuario viene de la sesión, nunca del cuerpo enviado por el navegador.
 export const list: RequestHandler = async (request, response) => {
-  const { page, pageSize } = paginationSchema.parse(request.query);
   const ownerId = request.user!.id;
-  const [items, total] = await prisma.$transaction([
-    prisma.experience.findMany({ where: { ownerId }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: (page - 1) * pageSize, take: pageSize }),
-    prisma.experience.count({ where: { ownerId } }),
-  ]);
-  response.json({ data: { items, total, page, pageSize } });
+  const items = await prisma.experience.findMany({
+    where: { ownerId },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+  });
+  response.json({ data: { items, total: items.length } });
 };
 
 export const get: RequestHandler = async (request, response) => {
