@@ -334,7 +334,10 @@ export default function ExperiencesView() {
                 </p>
               )}
               <p className={styles.count}>
-                {total} {total === 1 ? "experiencia guardada" : "experiencias guardadas"}
+                {total}{" "}
+                {total === 1
+                  ? "experiencia guardada"
+                  : "experiencias guardadas"}
               </p>
             </div>
           </>

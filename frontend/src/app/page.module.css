@@ -4,7 +4,7 @@
   min-height: 100dvh;
   margin: 0;
   overflow: hidden;
-  background: white;
+  background: var(--color-white);
 }
 .brand {
   position: relative;
@@ -14,70 +14,290 @@
   overflow: hidden;
   isolation: isolate;
   padding: clamp(38px, 4.35vw, 88px);
-  color: white;
-  background: #251d46;
+  color: var(--color-white);
+  background: var(--color-brand);
 }
-.logo { display: flex; align-items: center; gap: 13px; font-size: clamp(30px, 2.5vw, 48px); font-weight: 900; letter-spacing: -1.5px; }
-.logoIcon { display: grid; place-items: center; width: clamp(50px, 3.65vw, 74px); aspect-ratio: 1; border-radius: 38%; background: #7352fa; }
-.logoIcon svg { width: 64%; height: 64%; }
-.brandMessage { margin: 100px 0 120px; }
-.badge { display: inline-block; margin: 0 0 30px; padding: 11px 20px; border: 1px solid #746984; border-radius: 999px; background: #ffffff16; color: #ddff89; font-size: clamp(11px, 1.1vw, 22px); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-.brand h1 { margin: 0; font-size: clamp(42px, 4.45vw, 90px); line-height: 1.03; letter-spacing: -0.055em; font-weight: 900; }
-.description { max-width: 650px; margin: 34px 0 0; color: #c0b9cd; font-size: clamp(19px, 1.72vw, 34px); line-height: 1.7; }
-.tagline { margin: 0; color: #bfb1c2; font-size: clamp(15px, 1.3vw, 26px); line-height: 1.5; }
-.access { display: flex; align-items: center; justify-content: center; padding: clamp(40px, 5.9vw, 120px) clamp(35px, 7.15vw, 145px); }
-.content { width: 100%; max-width: 820px; }
-.eyebrow { margin: 0 0 18px; color: #7454ff; font-size: clamp(12px, 1.15vw, 23px); font-weight: 800; letter-spacing: 2.3px; text-transform: uppercase; }
-.access h2 { margin: 0; color: #24202d; font-size: clamp(40px, 3.45vw, 70px); font-weight: 850; letter-spacing: -0.055em; line-height: 1.15; }
-.subtitle { margin: 18px 0 38px; color: #787182; font-size: clamp(17px, 1.5vw, 30px); line-height: 1.5; }
-.notice { display: flex; align-items: center; gap: 15px; padding: 22px; margin-bottom: 36px; border: 1px solid #d7cdff; border-radius: 20px; background: #f2eeff; color: #59469a; font-size: clamp(14px, 1.35vw, 27px); line-height: 1.5; }
-.notice svg { flex-shrink: 0; }
-.notice p { margin: 0; }
-.form { display: grid; gap: 25px; }
-.field { display: grid; gap: 12px; }
-.field label { color: #40394b; font-weight: 700; font-size: clamp(15px, 1.3vw, 26px); }
-.field input, .field select { width: 100%; min-height: 60px; padding: 17px 20px; border: 1px solid #dcd6e7; border-radius: 15px; color: #292333; background: white; font: inherit; font-size: clamp(16px, 1.3vw, 26px); transition: border-color 160ms, box-shadow 160ms; }
-.field input::placeholder { color: #a6a0af; opacity: 1; }
-.field input:focus, .field select:focus { outline: none; border-color: #7552fb; box-shadow: 0 0 0 3px #7552fb22; }
-.submit { min-height: 57px; margin-top: 4px; border: 0; border-radius: 15px; background: #7352fa; padding: 16px; color: white; font: inherit; font-size: clamp(17px, 1.45vw, 29px); cursor: pointer; box-shadow: 0 14px 28px #7352fa14; transition: background 160ms, transform 160ms; }
-.submit:hover { background: #6340e6; }
-.submit:active { transform: translateY(1px); }
-.submit:focus-visible, .registration a:focus-visible { outline: 3px solid #4d3ba5; outline-offset: 4px; }
-.registration { margin: 36px 0 22px; text-align: center; color: #787182; font-size: clamp(15px, 1.3vw, 26px); line-height: 1.5; }
-.registration a { color: #7352fa; text-decoration: none; }
-.registration a:hover { text-decoration: underline; }
-.access { padding-top: clamp(40px, 3vw, 65px); padding-bottom: clamp(40px, 3vw, 65px); }
-.access .registration { margin-bottom: 0; }
-.demo { margin: 0; text-align: center; color: #8c8496; font-size: clamp(12px, 1.05vw, 20px); line-height: 1.5; }
-.feedback { margin: 16px 0 0; color: #59469a; font-size: 14px; line-height: 1.5; text-align: center; }
-.feedback:empty { display: none; }
-.demo a { color: #7352fa; text-underline-offset: 4px; }
-.demo a:hover { text-decoration: underline; }
-.demo a:focus-visible { outline: 3px solid #4d3ba5; outline-offset: 4px; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-size: clamp(30px, 2.5vw, 48px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+}
+.logoIcon {
+  display: grid;
+  place-items: center;
+  width: clamp(50px, 3.65vw, 74px);
+  aspect-ratio: 1;
+  border-radius: 38%;
+  background: var(--color-primary);
+}
+.logoIcon svg {
+  width: 64%;
+  height: 64%;
+}
+.brandMessage {
+  margin: 100px 0 120px;
+}
+.badge {
+  display: inline-block;
+  margin: 0 0 30px;
+  padding: 11px 20px;
+  border: 1px solid var(--color-brand-badge-border);
+  border-radius: 999px;
+  background: var(--color-brand-badge-background);
+  color: var(--color-brand-accent);
+  font-size: clamp(11px, 1.1vw, 22px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.brand h1 {
+  margin: 0;
+  font-size: clamp(42px, 4.45vw, 90px);
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+  font-weight: 900;
+}
+.description {
+  max-width: 650px;
+  margin: 34px 0 0;
+  color: var(--color-brand-description);
+  font-size: clamp(19px, 1.72vw, 34px);
+  line-height: 1.7;
+}
+.tagline {
+  margin: 0;
+  color: var(--color-brand-tagline);
+  font-size: clamp(15px, 1.3vw, 26px);
+  line-height: 1.5;
+}
+.access {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 5.9vw, 120px) clamp(35px, 7.15vw, 145px);
+}
+.content {
+  width: 100%;
+  max-width: 820px;
+}
+.eyebrow {
+  margin: 0 0 18px;
+  color: var(--color-auth-eyebrow);
+  font-size: clamp(12px, 1.15vw, 23px);
+  font-weight: 800;
+  letter-spacing: 2.3px;
+  text-transform: uppercase;
+}
+.access h2 {
+  margin: 0;
+  color: var(--color-auth-heading);
+  font-size: clamp(40px, 3.45vw, 70px);
+  font-weight: 850;
+  letter-spacing: -0.055em;
+  line-height: 1.15;
+}
+.subtitle {
+  margin: 18px 0 38px;
+  color: var(--color-auth-muted);
+  font-size: clamp(17px, 1.5vw, 30px);
+  line-height: 1.5;
+}
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 22px;
+  margin-bottom: 36px;
+  border: 1px solid var(--color-info-border);
+  border-radius: 20px;
+  background: var(--color-info-background);
+  color: var(--color-info-text);
+  font-size: clamp(14px, 1.35vw, 27px);
+  line-height: 1.5;
+}
+.notice svg {
+  flex-shrink: 0;
+}
+.notice p {
+  margin: 0;
+}
+.form {
+  display: grid;
+  gap: 25px;
+}
+.field {
+  display: grid;
+  gap: 12px;
+}
+.field label {
+  color: var(--color-auth-label);
+  font-weight: 700;
+  font-size: clamp(15px, 1.3vw, 26px);
+}
+.field input,
+.field select {
+  width: 100%;
+  min-height: 60px;
+  padding: 17px 20px;
+  border: 1px solid var(--color-auth-input-border);
+  border-radius: 15px;
+  color: var(--color-auth-input-text);
+  background: var(--color-white);
+  font: inherit;
+  font-size: clamp(16px, 1.3vw, 26px);
+  transition:
+    border-color 160ms,
+    box-shadow 160ms;
+}
+.field input::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--color-auth-focus);
+  box-shadow: 0 0 0 3px var(--color-auth-focus-ring);
+}
+.submit {
+  min-height: 57px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 15px;
+  background: var(--color-primary);
+  padding: 16px;
+  color: var(--color-white);
+  font: inherit;
+  font-size: clamp(17px, 1.45vw, 29px);
+  cursor: pointer;
+  box-shadow: 0 14px 28px var(--color-auth-button-shadow);
+  transition:
+    background 160ms,
+    transform 160ms;
+}
+.submit:hover {
+  background: var(--color-primary-hover);
+}
+.submit:active {
+  transform: translateY(1px);
+}
+.submit:focus-visible,
+.registration a:focus-visible {
+  outline: 3px solid var(--color-focus-outline);
+  outline-offset: 4px;
+}
+.registration {
+  margin: 36px 0 22px;
+  text-align: center;
+  color: var(--color-auth-muted);
+  font-size: clamp(15px, 1.3vw, 26px);
+  line-height: 1.5;
+}
+.registration a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.registration a:hover {
+  text-decoration: underline;
+}
+.access {
+  padding-top: clamp(40px, 3vw, 65px);
+  padding-bottom: clamp(40px, 3vw, 65px);
+}
+.access .registration {
+  margin-bottom: 0;
+}
+.feedback {
+  margin: 16px 0 0;
+  color: var(--color-info-text);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+.feedback:empty {
+  display: none;
+}
 @media (min-width: 1700px) {
-  .brandMessage { margin-top: 160px; margin-bottom: 180px; }
-  .badge { margin-bottom: 46px; }
-  .subtitle { margin-top: 26px; margin-bottom: 54px; }
-  .notice { padding: 30px; margin-bottom: 54px; }
-  .form { gap: 38px; }
-  .field { gap: 18px; }
-  .field input, .field select { min-height: 86px; padding: 24px 28px; }
-  .submit { min-height: 80px; }
-  .registration { margin-top: 48px; margin-bottom: 30px; }
+  .brandMessage {
+    margin-top: 160px;
+    margin-bottom: 180px;
+  }
+  .badge {
+    margin-bottom: 46px;
+  }
+  .subtitle {
+    margin-top: 26px;
+    margin-bottom: 54px;
+  }
+  .notice {
+    padding: 30px;
+    margin-bottom: 54px;
+  }
+  .form {
+    gap: 38px;
+  }
+  .field {
+    gap: 18px;
+  }
+  .field input,
+  .field select {
+    min-height: 86px;
+    padding: 24px 28px;
+  }
+  .submit {
+    min-height: 80px;
+  }
+  .registration {
+    margin-top: 48px;
+    margin-bottom: 30px;
+  }
 }
 @media (max-width: 900px) {
-  .page { grid-template-columns: 1fr; }
-  .brand { padding: 30px; }
-  .brandMessage { margin: 42px 0 30px; }
-  .badge { margin-bottom: 22px; font-size: 10px; letter-spacing: 1.5px; }
-  .brand h1 { font-size: clamp(40px, 7vw, 58px); }
-  .desktopBreak { display: none; }
-  .description { margin-top: 20px; font-size: 18px; line-height: 1.6; }
-  .tagline { font-size: 13px; }
-  .access { padding: 42px 28px; }
-  .content { max-width: 550px; }
-  .notice { padding: 17px; border-radius: 15px; margin-bottom: 28px; }
-  .subtitle { margin-bottom: 28px; }
+  .page {
+    grid-template-columns: 1fr;
+  }
+  .brand {
+    padding: 30px;
+  }
+  .brandMessage {
+    margin: 42px 0 30px;
+  }
+  .badge {
+    margin-bottom: 22px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+  .brand h1 {
+    font-size: clamp(40px, 7vw, 58px);
+  }
+  .desktopBreak {
+    display: none;
+  }
+  .description {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  .tagline {
+    font-size: 13px;
+  }
+  .access {
+    padding: 42px 28px;
+  }
+  .content {
+    max-width: 550px;
+  }
+  .notice {
+    padding: 17px;
+    border-radius: 15px;
+    margin-bottom: 28px;
+  }
+  .subtitle {
+    margin-bottom: 28px;
+  }
 }
 /* En escritorio, las pantallas de acceso se adaptan a la altura disponible. */
 @media (min-width: 901px) {
@@ -85,25 +305,74 @@
     padding-top: clamp(24px, 5dvh, 64px);
     padding-bottom: clamp(24px, 5dvh, 64px);
   }
-  .page .brandMessage { margin: 24px 0; }
-  .page .brand h1 { font-size: clamp(40px, min(4.45vw, 7.5dvh), 90px); }
-  .page .badge { margin-bottom: clamp(18px, 3dvh, 36px); }
-  .page .description { margin-top: clamp(20px, 3dvh, 34px); font-size: clamp(18px, min(1.72vw, 2.8dvh), 34px); }
-  .access { padding-top: clamp(20px, 3dvh, 40px); padding-bottom: clamp(20px, 3dvh, 40px); }
-  .access .eyebrow { margin-bottom: clamp(10px, 1.6dvh, 18px); font-size: clamp(12px, 1.9dvh, 22px); }
-  .access h2 { font-size: clamp(34px, 6dvh, 68px); }
-  .access .subtitle { margin: clamp(12px, 1.8dvh, 22px) 0 clamp(22px, 3dvh, 36px); font-size: clamp(16px, 2.5dvh, 28px); }
-  .access .form { gap: clamp(12px, 1.8dvh, 24px); }
-  .access .field { gap: clamp(6px, 0.9dvh, 12px); }
-  .access .field label { font-size: clamp(14px, 2dvh, 24px); }
-  .access .field input, .access .field select { min-height: 0; height: clamp(44px, 6.5dvh, 78px); padding: 10px 20px; font-size: clamp(16px, 2dvh, 24px); }
-  .access .submit { min-height: 0; height: clamp(44px, 6.5dvh, 76px); padding: 10px 16px; font-size: clamp(17px, 2.3dvh, 27px); }
-  .access .registration { margin-top: clamp(18px, 2.5dvh, 30px); font-size: clamp(14px, 2dvh, 24px); }
-  .access .notice { padding: clamp(14px, 2dvh, 24px); margin-bottom: clamp(20px, 3dvh, 36px); font-size: clamp(14px, 2dvh, 24px); }
-  .access .demo { font-size: clamp(12px, 1.7dvh, 18px); }
+  .page .brandMessage {
+    margin: 24px 0;
+  }
+  .page .brand h1 {
+    font-size: clamp(40px, min(4.45vw, 7.5dvh), 90px);
+  }
+  .page .badge {
+    margin-bottom: clamp(18px, 3dvh, 36px);
+  }
+  .page .description {
+    margin-top: clamp(20px, 3dvh, 34px);
+    font-size: clamp(18px, min(1.72vw, 2.8dvh), 34px);
+  }
+  .access {
+    padding-top: clamp(20px, 3dvh, 40px);
+    padding-bottom: clamp(20px, 3dvh, 40px);
+  }
+  .access .eyebrow {
+    margin-bottom: clamp(10px, 1.6dvh, 18px);
+    font-size: clamp(12px, 1.9dvh, 22px);
+  }
+  .access h2 {
+    font-size: clamp(34px, 6dvh, 68px);
+  }
+  .access .subtitle {
+    margin: clamp(12px, 1.8dvh, 22px) 0 clamp(22px, 3dvh, 36px);
+    font-size: clamp(16px, 2.5dvh, 28px);
+  }
+  .access .form {
+    gap: clamp(12px, 1.8dvh, 24px);
+  }
+  .access .field {
+    gap: clamp(6px, 0.9dvh, 12px);
+  }
+  .access .field label {
+    font-size: clamp(14px, 2dvh, 24px);
+  }
+  .access .field input,
+  .access .field select {
+    min-height: 0;
+    height: clamp(44px, 6.5dvh, 78px);
+    padding: 10px 20px;
+    font-size: clamp(16px, 2dvh, 24px);
+  }
+  .access .submit {
+    min-height: 0;
+    height: clamp(44px, 6.5dvh, 76px);
+    padding: 10px 16px;
+    font-size: clamp(17px, 2.3dvh, 27px);
+  }
+  .access .registration {
+    margin-top: clamp(18px, 2.5dvh, 30px);
+    font-size: clamp(14px, 2dvh, 24px);
+  }
+  .access .notice {
+    padding: clamp(14px, 2dvh, 24px);
+    margin-bottom: clamp(20px, 3dvh, 36px);
+    font-size: clamp(14px, 2dvh, 24px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .field input, .submit { transition: none; }
+  .field input,
+  .submit {
+    transition: none;
+  }
 }
 
-.submit:disabled { opacity: 0.65; cursor: wait; }
+.submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}

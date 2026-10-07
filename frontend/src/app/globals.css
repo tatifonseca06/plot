@@ -1,8 +1,71 @@
 @import "tailwindcss";
 
+:root {
+  --color-primary: #7352fa;
+  --color-primary-hover: #6340e6;
+  --color-white: white;
+  --color-page: #f4f2f8;
+  --color-body-text: #241d42;
+  --color-collection-page: #f7f5fa;
+  --color-text: #292433;
+  --color-header-border: #e5e0eb;
+  --color-logo-text: #241e30;
+  --color-logo-shadow: #7352fa16;
+  --color-exit-text: #6d6379;
+  --color-error-border: #f0c7cb;
+  --color-error-background: #fff1f2;
+  --color-error-text: #ac293b;
+  --color-muted: #81788d;
+  --color-button-shadow: #7352fa1a;
+  --color-input-border: #ddd6e8;
+  --color-secondary-text: #3f374c;
+  --color-secondary-hover: #f4f0ff;
+  --color-secondary-hover-border: #b6a5f4;
+  --color-danger-background: #fcf0f1;
+  --color-danger-text: #c44956;
+  --color-danger-hover: #f9dfe3;
+  --color-success-border: #c4e7ce;
+  --color-success-background: #eff9f2;
+  --color-success-text: #3f714c;
+  --color-success-icon: #d9f0df;
+  --color-card-border: #e3deea;
+  --color-card-shadow: #30244306;
+  --color-table-header: #f1eef5;
+  --color-table-muted: #80768c;
+  --color-table-border: #e6e1ec;
+  --color-culture-background: #eee7ff;
+  --color-culture-text: #654bb8;
+  --color-food-background: #fff4d4;
+  --color-food-text: #886622;
+  --color-adventure-background: #fdf0e7;
+  --color-adventure-text: #b35734;
+  --color-count-text: #92899c;
+  --color-backdrop: #251d4677;
+  --color-brand: #251d46;
+  --color-brand-badge-border: #746984;
+  --color-brand-badge-background: #ffffff16;
+  --color-brand-accent: #ddff89;
+  --color-brand-description: #c0b9cd;
+  --color-brand-tagline: #bfb1c2;
+  --color-auth-eyebrow: #7454ff;
+  --color-auth-heading: #24202d;
+  --color-auth-muted: #787182;
+  --color-info-border: #d7cdff;
+  --color-info-background: #f2eeff;
+  --color-info-text: #59469a;
+  --color-auth-label: #40394b;
+  --color-auth-input-border: #dcd6e7;
+  --color-auth-input-text: #292333;
+  --color-placeholder: #a6a0af;
+  --color-auth-focus: #7552fb;
+  --color-auth-focus-ring: #7552fb22;
+  --color-auth-button-shadow: #7352fa14;
+  --color-focus-outline: #4d3ba5;
+}
+
 body {
   margin: 0;
-  background: #f4f2f8;
-  color: #241d42;
+  background: var(--color-page);
+  color: var(--color-body-text);
   font-family: Arial, Helvetica, sans-serif;
 }

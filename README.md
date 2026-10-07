@@ -83,7 +83,6 @@ plot/
 │       ├── app/                  # Login, registro y experiencias
 │       ├── components/           # Formularios, tabla y estilos
 │       └── lib/api.ts            # Peticiones a Express
-├── docs/                         # Decisiones y evidencia académica
 ├── compose.yaml                  # PostgreSQL local y volumen persistente
 └── README.md
 ```
@@ -234,7 +233,7 @@ npm --prefix backend test
 
 El comando de creación de base solo se ejecuta una vez. Las pruebas se niegan a utilizar otra base y limpian únicamente sus propios usuarios y registros.
 
-**Resultado comprobado:** 15 subcasos funcionales correctos (16 pruebas contando el caso padre), incluyendo registro, login, CRUD persistente, listado completo, acceso a recursos ajenos, roles, vencimiento y cierre de sesión. También se comprobó la integración HTTP de Next.js con Express y PostgreSQL. La evidencia está en [docs/02-core-mvc.md](docs/02-core-mvc.md).
+**Resultado comprobado:** 15 subcasos funcionales correctos (16 pruebas contando el caso padre), incluyendo registro, login, CRUD persistente, listado completo, acceso a recursos ajenos, roles, vencimiento y cierre de sesión. También se comprobó la integración HTTP de Next.js con Express y PostgreSQL.
 
 No se presenta esta comprobación HTTP como una prueba visual automatizada en navegador.
 
@@ -254,8 +253,6 @@ No se presenta esta comprobación HTTP como una prueba visual automatizada en na
 
 Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendientes el catálogo público, moderación, sesiones de experiencias, salas, votaciones, reservas, misiones, reseñas y despliegue. Los patrones y mejoras SOLID de la entrega posterior no se presentan como implementados.
 
-- [Inicialización del proyecto](docs/01-inicializacion.md).
-- [Arquitectura, decisiones, API y pruebas](docs/02-core-mvc.md).
 - [Notas del backend](backend/README.md).
 - [Notas del frontend](frontend/README.md).
 
@@ -266,3 +263,9 @@ Antes de desplegar se deben revisar las dependencias y la configuración de prod
 ## Autoría
 
 Proyecto académico de [tatifonseca06](https://github.com/tatifonseca06), desarrollado para Ingeniería Web.
+
+## Estilos y compilación
+
+Los colores se definen como variables CSS en `frontend/src/app/globals.css`, dentro de `:root`. Los módulos CSS las utilizan con `var(--color-primary)`, por ejemplo.
+
+El frontend utiliza Webpack mediante `next dev --webpack` y `next build --webpack`. Las carpetas `.next`, `node_modules` y `dist`, los archivos privados `.env` y la carpeta local `docs` están excluidos de Git. Los archivos `package-lock.json` sí se incluyen para reproducir las versiones instaladas.

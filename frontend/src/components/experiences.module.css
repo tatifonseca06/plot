@@ -1,7 +1,7 @@
 .page {
   min-height: 100dvh;
-  background: #f7f5fa;
-  color: #292433;
+  background: var(--color-collection-page);
+  color: var(--color-text);
 }
 .header {
   display: flex;
@@ -9,14 +9,14 @@
   justify-content: space-between;
   gap: 24px;
   padding: 12px 24px;
-  background: white;
-  border-bottom: 1px solid #e5e0eb;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-header-border);
 }
 .logo {
   display: inline-flex;
   align-items: center;
   gap: 13px;
-  color: #241e30;
+  color: var(--color-logo-text);
   font-size: 30px;
   font-weight: 900;
   letter-spacing: -2px;
@@ -28,9 +28,9 @@
   width: 44px;
   height: 44px;
   border-radius: 38%;
-  color: white;
-  background: #7352fa;
-  box-shadow: 0 12px 30px #7352fa16;
+  color: var(--color-white);
+  background: var(--color-primary);
+  box-shadow: 0 12px 30px var(--color-logo-shadow);
 }
 .logoIcon svg {
   width: 30px;
@@ -40,12 +40,12 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  color: #6d6379;
+  color: var(--color-exit-text);
   font-size: 15px;
   text-decoration: none;
 }
 .exit:hover {
-  color: #7352fa;
+  color: var(--color-primary);
 }
 .exit {
   border: 0;
@@ -59,14 +59,14 @@
 }
 .error {
   padding: 12px 16px;
-  border: 1px solid #f0c7cb;
+  border: 1px solid var(--color-error-border);
   border-radius: 10px;
-  background: #fff1f2;
-  color: #ac293b;
+  background: var(--color-error-background);
+  color: var(--color-error-text);
   font-size: 14px;
 }
 .dialog .error {
-  color: #ac293b;
+  color: var(--color-error-text);
   margin-top: 16px;
 }
 .sessionState {
@@ -95,7 +95,7 @@
 }
 .eyebrow {
   margin: 0 0 8px;
-  color: #7352fa;
+  color: var(--color-primary);
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 800;
@@ -110,7 +110,7 @@
 }
 .subtitle {
   margin: 10px 0 0;
-  color: #81788d;
+  color: var(--color-muted);
   font-size: 16px;
   line-height: 1.5;
 }
@@ -130,34 +130,34 @@
   white-space: nowrap;
 }
 .primary {
-  border: 1px solid #7352fa;
-  background: #7352fa;
-  color: white;
-  box-shadow: 0 14px 28px #7352fa1a;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 14px 28px var(--color-button-shadow);
 }
 .primary:hover {
-  background: #6340e6;
+  background: var(--color-primary-hover);
 }
 .secondary {
-  border: 1px solid #ddd6e8;
-  background: white;
-  color: #3f374c;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-white);
+  color: var(--color-secondary-text);
 }
 .secondary:hover {
-  background: #f4f0ff;
-  border-color: #b6a5f4;
+  background: var(--color-secondary-hover);
+  border-color: var(--color-secondary-hover-border);
 }
 .danger {
   border: 1px solid transparent;
-  background: #fcf0f1;
-  color: #c44956;
+  background: var(--color-danger-background);
+  color: var(--color-danger-text);
 }
 .danger:hover {
-  background: #f9dfe3;
+  background: var(--color-danger-hover);
 }
 .page button:focus-visible,
 .page a:focus-visible {
-  outline: 3px solid #7352fa;
+  outline: 3px solid var(--color-primary);
   outline-offset: 4px;
 }
 .notice {
@@ -166,10 +166,10 @@
   gap: 15px;
   padding: 12px 16px;
   margin: 0 0 20px;
-  border: 1px solid #c4e7ce;
+  border: 1px solid var(--color-success-border);
   border-radius: 20px;
-  background: #eff9f2;
-  color: #3f714c;
+  background: var(--color-success-background);
+  color: var(--color-success-text);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.5;
@@ -181,14 +181,14 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #d9f0df;
+  background: var(--color-success-icon);
 }
 .collection {
   overflow: hidden;
-  border: 1px solid #e3deea;
+  border: 1px solid var(--color-card-border);
   border-radius: 18px;
-  background: white;
-  box-shadow: 0 12px 38px #30244306;
+  background: var(--color-white);
+  box-shadow: 0 12px 38px var(--color-card-shadow);
 }
 .tableScroll {
   overflow-x: auto;
@@ -199,11 +199,11 @@
   text-align: left;
 }
 .table thead {
-  background: #f1eef5;
+  background: var(--color-table-header);
 }
 .table thead th {
   padding: 14px 20px;
-  color: #80768c;
+  color: var(--color-table-muted);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -211,7 +211,7 @@
 .table tbody th,
 .table tbody td {
   padding: 18px 20px;
-  border-bottom: 1px solid #e6e1ec;
+  border-bottom: 1px solid var(--color-table-border);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -225,7 +225,7 @@
   width: 14%;
 }
 .description {
-  color: #80768c;
+  color: var(--color-table-muted);
   overflow-wrap: anywhere;
 }
 .table .actionsHeading {
@@ -245,27 +245,27 @@
   white-space: nowrap;
 }
 .category0 {
-  background: #eee7ff;
-  color: #654bb8;
+  background: var(--color-culture-background);
+  color: var(--color-culture-text);
 }
 .category1 {
-  background: #fff4d4;
-  color: #886622;
+  background: var(--color-food-background);
+  color: var(--color-food-text);
 }
 .category2 {
-  background: #fdf0e7;
-  color: #b35734;
+  background: var(--color-adventure-background);
+  color: var(--color-adventure-text);
 }
 .count {
   margin: 0;
   padding: 14px 20px;
   font-size: 15px;
-  color: #92899c;
+  color: var(--color-count-text);
 }
 .empty {
   padding: 30px;
   text-align: center;
-  color: #80768c;
+  color: var(--color-table-muted);
 }
 .srOnly {
   position: absolute;
@@ -282,13 +282,13 @@
   max-height: calc(100dvh - 40px);
   margin: auto;
   padding: 30px;
-  border: 1px solid #e3deea;
+  border: 1px solid var(--color-card-border);
   border-radius: 24px;
-  color: #292433;
-  background: white;
+  color: var(--color-text);
+  background: var(--color-white);
 }
 .dialog::backdrop {
-  background: #251d4677;
+  background: var(--color-backdrop);
 }
 .dialog h2 {
   font-size: 28px;
@@ -296,7 +296,7 @@
   margin: 0 0 12px;
 }
 .dialog p {
-  color: #81788d;
+  color: var(--color-muted);
   margin: 0 0 24px;
   line-height: 1.5;
 }
@@ -310,10 +310,10 @@
 .dialog textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ddd6e8;
+  border: 1px solid var(--color-input-border);
   border-radius: 10px;
   font: inherit;
-  background: white;
+  background: var(--color-white);
 }
 .dialog textarea {
   resize: vertical;
@@ -321,7 +321,7 @@
 .dialog input:focus,
 .dialog select:focus,
 .dialog textarea:focus {
-  outline: 2px solid #7352fa;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 .dialogActions {

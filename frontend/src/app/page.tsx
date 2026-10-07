@@ -2,7 +2,11 @@ import AuthBrand from "@/components/auth-brand";
 import LoginForm from "@/components/login-form";
 import styles from "./page.module.css";
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ registro?: string }> }) {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ registro?: string }>;
+}) {
   const { registro } = await searchParams;
   return (
     <main className={styles.page}>

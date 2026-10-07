@@ -20,4 +20,4 @@ npm test
 
 Para las escrituras se debe enviar `Origin: http://localhost:3000` (o el FRONTEND_URL configurado). El navegador lo envía al usar el frontend. Las operaciones protegidas requieren también la cookie de sesión.
 
-Contrato de respuestas, MVC y pruebas: [docs/02-core-mvc.md](../docs/02-core-mvc.md).
+Contrato de respuestas, MVC y pruebas: [README principal](../README.md).

@@ -14,7 +14,10 @@ const server = app.listen(port, () => {
 });
 
 async function shutdown() {
-  server.close(async () => { await prisma.$disconnect(); process.exit(0); });
+  server.close(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
 }
 process.on("SIGTERM", shutdown);
 process.on("SIGINT", shutdown);
