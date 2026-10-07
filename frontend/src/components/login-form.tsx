@@ -2,15 +2,27 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { api, errorMessage } from "@/lib/api";
 import styles from "@/app/page.module.css";
 
-export default function LoginForm() {
+export default function LoginForm({ registered = false }: { registered?: boolean }) {
   const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
+  const router = useRouter();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // La autenticación se conectará a Express en la siguiente etapa.
-    setMessage("El inicio de sesión todavía no está disponible. Pronto podrás acceder a tu cuenta.");
+    if (pending) return;
+    const data = new FormData(event.currentTarget);
+    setPending(true);
+    setMessage("");
+    try {
+      await api("/auth/login", { method: "POST", body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
+      router.replace("/experiencias");
+      router.refresh();
+    } catch (error) { setMessage(errorMessage(error)); }
+    finally { setPending(false); }
   }
 
   return (
@@ -20,7 +32,7 @@ export default function LoginForm() {
           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
           <path d="M12 11v6M12 7v1" stroke="currentColor" strokeWidth="2" />
         </svg>
-        <p>Debes iniciar sesión para acceder a esta sección.</p>
+        <p>{registered ? "Cuenta creada correctamente. Ya puedes iniciar sesión." : "Inicia sesión para acceder a tus experiencias."}</p>
       </div>
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
@@ -31,13 +43,12 @@ export default function LoginForm() {
           <label htmlFor="password">Contraseña</label>
           <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Mínimo 8 caracteres" minLength={8} required />
         </div>
-        <button className={styles.submit} type="submit">Iniciar sesión</button>
+        <button className={styles.submit} type="submit" disabled={pending}>{pending ? "Ingresando…" : "Iniciar sesión"}</button>
       </form>
       <p className={styles.registration}>
         ¿No tienes cuenta?{" "}
         <Link href="/registro">Regístrate</Link>
       </p>
-      <p className={styles.demo}><Link href="/experiencias">Explorar la demo de Plot →</Link></p>
       <p className={styles.feedback} role="status">{message}</p>
     </>
   );

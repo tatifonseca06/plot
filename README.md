@@ -2,88 +2,85 @@
 
 Proyecto universitario para descubrir y organizar experiencias con amigos.
 
-## Estado
+## Lo que funciona ahora
 
-Estructura y dependencias, pantallas de login y registro basadas en las referencias de Figma y API Express con `GET /api/health`. Express confirmado por la estudiante.
+- Registro e inicio/cierre de sesión reales.
+- Cuentas de participante y organizador.
+- Crear, listar, consultar, editar y eliminar experiencias propias como organizador.
+- Persistencia con PostgreSQL y Prisma, migración versionada y permisos en Express.
+- Pantallas compactas de login, registro y experiencias; lista paginada.
 
-La pantalla incluye campos obligatorios, validación HTML del correo y contraseña de al menos ocho caracteres, estilos para móvil y estados de foco. Todavía no están implementados la autenticación real, el registro, CRUD, base de datos ni despliegue. Los formularios explican al enviarse que el acceso y registro están pendientes; no envían ni almacenan credenciales. El registro está en `/registro`, incluye nombre completo y confirmación de contraseña, y está enlazado desde el login.
+Este primer módulo MVC no incluye aún catálogo público, aprobación, reservas, misiones, reseñas ni despliegue. Las experiencias son privadas del organizador, sin publicación. No se han aplicado todavía los patrones exigidos por la materia.
 
-## Ejecutar
+## Usar en este equipo
 
-Requisito: Node.js 22.23.1 (versión utilizada, también indicada en `.nvmrc`).
-
-Desde la carpeta `plot`, abrir dos terminales:
+La base local ya está preparada. Si Docker está apagado, ejecutar `colima start` primero.
 
 ```sh
-# Terminal 1: interfaz en http://localhost:3000
-npm run dev:frontend
+cd ~/plot
+npm run db:up
 ```
 
+Abrir dos terminales dentro de `plot`:
+
 ```sh
-# Terminal 2: API en http://localhost:4000/api/health
 npm run dev:backend
 ```
 
-La API responde:
-
-```json
-{"data":{"status":"ok","service":"plot-api"}}
-```
-
-Esta ruta solo verifica el servidor HTTP; no comprueba PostgreSQL.
-
-Para reinstalar en otro equipo:
-
 ```sh
-npm --prefix frontend ci
-npm --prefix backend ci
+npm run dev:frontend
 ```
 
-Cada aplicación tiene su propio `package.json` y lockfile. El `package.json` raíz solo proporciona atajos; no utiliza npm workspaces.
+Abrir http://localhost:3000, registrarse como **Organizador**, iniciar sesión y crear una experiencia. Los participantes no pueden usar el CRUD de organizadores. No hay cuentas de demostración preinsertadas.
 
-## Estructura y recorrido de una petición
+Para detener solo la base sin borrar sus datos: `npm run db:stop`.
+
+## Instalar desde cero
+
+Requisitos: Node.js 22.23.1 y Docker con Compose. En este Mac está instalado el comando `docker-compose`; si tu equipo usa el plugin moderno, sustituirlo por `docker compose` en los scripts de la raíz.
+
+1. Copiar `backend/.env.example` a `backend/.env` y reemplazar la contraseña de ejemplo tanto en POSTGRES_PASSWORD como en DATABASE_URL. No versionar el archivo.
+2. Ejecutar `npm --prefix backend ci` y `npm --prefix frontend ci`.
+3. Ejecutar `npm run db:up`.
+4. Ejecutar `npm --prefix backend run db:deploy` y `npm --prefix backend run generate`.
+5. Arrancar backend y frontend con los comandos anteriores.
+
+La base usa el puerto local 5433 y un volumen Docker persistente exclusivo de Plot. Express usa 4000; Next.js usa 3000. `FRONTEND_URL` debe coincidir con el origen del navegador. `frontend/.env.example` muestra la URL interna de Express; el valor predeterminado funciona localmente.
+
+## MVC y archivos principales
 
 ```text
-plot/
-  frontend/src/app/       Pantallas y estilos
-  backend/src/
-    server.ts            Inicia el servidor HTTP
-    app.ts               Configura Express y los middleware
-    routes/              Asocia URL y controlador
-    controllers/         Recibe peticiones y construye respuestas
-  docs/                  Explicaciones y decisiones
+backend/
+  prisma/schema.prisma       Entidades y relaciones
+  prisma/migrations/         Historial de cambios de la base
+  src/routes/                URL → controlador
+  src/controllers/           Solicitudes, consultas Prisma y respuestas
+  src/middleware/auth.ts     Sesiones y permisos
+  src/security/password.ts   Hash de contraseñas
+  src/validations.ts         Reglas de entrada
+  src/db.ts                  Conexión Prisma
+  src/app.ts                 Configuración de Express y errores
+  src/server.ts              Inicio del servidor
+frontend/src/
+  app/                       Vistas: login, registro, experiencias
+  components/                Formularios y tabla
+  lib/api.ts                 Peticiones JSON a Express
 ```
 
-Ejemplo: `GET /api/health` pasa por `app.ts`, llega a `health.routes.ts` y ejecuta `getHealth` en el controlador, que devuelve JSON.
+El Modelo incluye datos y reglas; Prisma es la herramienta de persistencia. Los controladores acceden directamente a Prisma en esta versión sencilla. Las vistas de Next.js consumen la API JSON de Express. No se han creado capas de servicios o repositorios.
 
-El Modelo de MVC incluirá los datos y reglas de negocio, y se incorporará al desarrollar los módulos. Prisma será una herramienta de persistencia dentro de esa capa. Las vistas estarán en Next.js. Esta base todavía no constituye un Core MVC funcional.
-
-## Dependencias
-
-- Next.js y React: interfaz y páginas.
-- TypeScript: comprobación estática de tipos; no sustituye la validación de peticiones.
-- Tailwind CSS: estilos.
-- Motion: animaciones, instalado para su uso posterior.
-- Express: servidor y API JSON.
-- CORS: configura qué origen puede leer la API desde el navegador; no es autenticación.
-- dotenv: carga variables locales desde `.env`, si existe.
-- Prisma 7, Prisma Client, adaptador PostgreSQL y pg: herramientas instaladas para la futura persistencia. Los modelos y migraciones se crearán al diseñar usuarios.
-- tsx: ejecuta TypeScript y reinicia el backend durante desarrollo.
-- ESLint: revisión estática del frontend.
-
-Los puertos funcionan con valores locales predeterminados. `backend/.env.example` explica las variables opcionales. Los archivos `.env` quedan excluidos de Git.
-
-## Verificación
+## Comprobaciones
 
 ```sh
 npm run check
 npm run build
+npm --prefix backend test
 ```
 
-Estas comprobaciones de inicialización no reemplazan las pruebas funcionales exigidas por la materia.
+Las pruebas usan exclusivamente `plot_test`. En este equipo ya está configurada. En otro equipo, crear esa base vacía, copiar `backend/.env` a `backend/.env.test`, cambiar DATABASE_URL para terminar en `/plot_test` y establecer `NODE_ENV=test`. Después ejecutar `npm --prefix backend run db:deploy:test` y el comando de pruebas. Nunca reutilizar la base de la aplicación para pruebas.
 
-## Avisos de dependencias
+Se comprobaron 15 subcasos de API y la integración HTTP desde Next.js hasta PostgreSQL. La verificación visual en navegador queda pendiente. Detalles y evidencias: [docs/02-core-mvc.md](docs/02-core-mvc.md).
 
-La auditoría inicial de npm reportó 5 avisos altos en la cadena de ESLint/Next (`braces`) y 4 en herramientas de Prisma (`deepmerge-ts`, `mysql2`). Las soluciones automáticas propuestas implican cambios mayores de versiones; no se aplicó `npm audit fix --force`. Revisar actualizaciones compatibles antes del despliegue. No se han usado esas herramientas con entradas de usuarios ni se ha desplegado la aplicación.
+## Dependencias pendientes de revisar antes del despliegue
 
-Guía del primer paso: [docs/01-inicializacion.md](docs/01-inicializacion.md).
+La auditoría inicial de npm reportó 5 avisos altos en dependencias de ESLint/Next y 4 en herramientas de Prisma. Las soluciones automáticas sugeridas cambiaban versiones mayores; no se aplicó `npm audit fix --force`. Esta entrega es local y todavía requiere revisar versiones y configuración de producción antes de desplegar.

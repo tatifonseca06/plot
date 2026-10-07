@@ -39,9 +39,9 @@
 .form { display: grid; gap: 25px; }
 .field { display: grid; gap: 12px; }
 .field label { color: #40394b; font-weight: 700; font-size: clamp(15px, 1.3vw, 26px); }
-.field input { width: 100%; min-height: 60px; padding: 17px 20px; border: 1px solid #dcd6e7; border-radius: 15px; color: #292333; background: white; font: inherit; font-size: clamp(16px, 1.3vw, 26px); transition: border-color 160ms, box-shadow 160ms; }
+.field input, .field select { width: 100%; min-height: 60px; padding: 17px 20px; border: 1px solid #dcd6e7; border-radius: 15px; color: #292333; background: white; font: inherit; font-size: clamp(16px, 1.3vw, 26px); transition: border-color 160ms, box-shadow 160ms; }
 .field input::placeholder { color: #a6a0af; opacity: 1; }
-.field input:focus { outline: none; border-color: #7552fb; box-shadow: 0 0 0 3px #7552fb22; }
+.field input:focus, .field select:focus { outline: none; border-color: #7552fb; box-shadow: 0 0 0 3px #7552fb22; }
 .submit { min-height: 57px; margin-top: 4px; border: 0; border-radius: 15px; background: #7352fa; padding: 16px; color: white; font: inherit; font-size: clamp(17px, 1.45vw, 29px); cursor: pointer; box-shadow: 0 14px 28px #7352fa14; transition: background 160ms, transform 160ms; }
 .submit:hover { background: #6340e6; }
 .submit:active { transform: translateY(1px); }
@@ -64,7 +64,7 @@
   .notice { padding: 30px; margin-bottom: 54px; }
   .form { gap: 38px; }
   .field { gap: 18px; }
-  .field input { min-height: 86px; padding: 24px 28px; }
+  .field input, .field select { min-height: 86px; padding: 24px 28px; }
   .submit { min-height: 80px; }
   .registration { margin-top: 48px; margin-bottom: 30px; }
 }
@@ -101,7 +101,7 @@
   .access .form { gap: clamp(12px, 1.8dvh, 24px); }
   .access .field { gap: clamp(6px, 0.9dvh, 12px); }
   .access .field label { font-size: clamp(14px, 2dvh, 24px); }
-  .access .field input { min-height: 0; height: clamp(44px, 6.5dvh, 78px); padding: 10px 20px; font-size: clamp(16px, 2dvh, 24px); }
+  .access .field input, .access .field select { min-height: 0; height: clamp(44px, 6.5dvh, 78px); padding: 10px 20px; font-size: clamp(16px, 2dvh, 24px); }
   .access .submit { min-height: 0; height: clamp(44px, 6.5dvh, 76px); padding: 10px 16px; font-size: clamp(17px, 2.3dvh, 27px); }
   .access .registration { margin-top: clamp(18px, 2.5dvh, 30px); font-size: clamp(14px, 2dvh, 24px); }
   .access .notice { padding: clamp(14px, 2dvh, 24px); margin-bottom: clamp(20px, 3dvh, 36px); font-size: clamp(14px, 2dvh, 24px); }
@@ -110,3 +110,5 @@
 @media (prefers-reduced-motion: reduce) {
   .field input, .submit { transition: none; }
 }
+
+.submit:disabled { opacity: 0.65; cursor: wait; }

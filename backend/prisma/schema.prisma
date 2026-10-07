@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PARTICIPANT
+  ORGANIZER
+  ADMIN
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  fullName String @db.VarChar(120)
+  email String @unique @db.VarChar(254)
+  passwordHash String
+  role Role @default(PARTICIPANT)
+  createdAt DateTime @default(now())
+  sessions Session[]
+  experiences Experience[]
+}
+
+model Session {
+  id String @id
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Experience {
+  id String @id @default(uuid()) @db.Uuid
+  title String @db.VarChar(100)
+  category String @db.VarChar(40)
+  description String @db.VarChar(500)
+  ownerId String @db.Uuid
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([ownerId, createdAt])
+}

@@ -6,6 +6,8 @@
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
     "build": "npm --prefix backend run build && npm --prefix frontend run build",
-    "check": "npm --prefix backend run typecheck && npm --prefix frontend run lint"
+    "check": "npm --prefix backend run typecheck && npm --prefix frontend run lint",
+    "db:up": "docker-compose up -d --wait db",
+    "db:stop": "docker-compose stop db"
   }
 }
