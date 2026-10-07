@@ -1,5 +1,9 @@
 # Plot
 
+<p align="center">
+  <img src="frontend/public/plot-logo.png" alt="Logo de Plot: tres personas sobre un camino y el nombre de la aplicación" width="260">
+</p>
+
 **Organiza experiencias con amigos, desde la idea hasta un plan real.**
 
 Plot es un proyecto universitario de Ingeniería Web. Esta primera entrega implementa **registro, login y un CRUD de experiencias**, con una estructura MVC sencilla, una API de Express y persistencia en PostgreSQL.
@@ -17,6 +21,7 @@ El concepto general contempla experiencias grupales; la versión actual permite 
 - [Pruebas](#pruebas)
 - [Solución de problemas](#solución-de-problemas)
 - [Alcance y documentación](#alcance-y-documentación)
+- [Autoría](#autoría)
 
 ## Funcionalidades
 
@@ -258,14 +263,9 @@ Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendie
 
 La etiqueta Git `core-mvc-auth-crud-v1` conserva la primera versión funcional de autenticación y CRUD. La rama `main` contiene las simplificaciones posteriores.
 
-Antes de desplegar se deben revisar las dependencias y la configuración de producción. La auditoría inicial registró avisos en herramientas de ESLint/Next y Prisma; no se aplicaron cambios mayores automáticos. Este repositorio no implica que exista ya un sitio desplegado.
-
 ## Autoría
 
-Proyecto académico de [tatifonseca06](https://github.com/tatifonseca06), desarrollado para Ingeniería Web.
+Proyecto académico desarrollado para Ingeniería Web por:
 
-## Estilos y compilación
-
-Los colores se definen como variables CSS en `frontend/src/app/globals.css`, dentro de `:root`. Los módulos CSS las utilizan con `var(--color-primary)`, por ejemplo.
-
-El frontend utiliza Webpack mediante `next dev --webpack` y `next build --webpack`. Las carpetas `.next`, `node_modules` y `dist`, los archivos privados `.env` y la carpeta local `docs` están excluidos de Git. Los archivos `package-lock.json` sí se incluyen para reproducir las versiones instaladas.
+- [Tatiana Fonseca](https://github.com/tatifonseca06).
+- Josue Chiriboga.
