@@ -261,8 +261,6 @@ Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendie
 - [Notas del backend](backend/README.md).
 - [Notas del frontend](frontend/README.md).
 
-La etiqueta Git `core-mvc-auth-crud-v1` conserva la primera versión funcional de autenticación y CRUD. La rama `main` contiene las simplificaciones posteriores.
-
 ## Autoría
 
 Proyecto académico desarrollado para Ingeniería Web por:
