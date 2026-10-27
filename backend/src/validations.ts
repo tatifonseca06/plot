@@ -32,5 +32,9 @@ export const experienceSchema = z
   })
   .strict();
 export const idSchema = z.string().uuid("Identificador no válido.");
+export const adminExperienceSchema = experienceSchema.extend({
+  ownerId: idSchema,
+});
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
+export type AdminExperienceInput = z.infer<typeof adminExperienceSchema>;

@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api, errorMessage } from "@/lib/api";
+import { api, errorMessage, type User } from "@/lib/api";
 import styles from "@/app/page.module.css";
 
 export default function LoginForm({
@@ -29,7 +29,8 @@ export default function LoginForm({
           password: data.get("password"),
         }),
       });
-      router.replace("/experiencias");
+      const me = await api<User>("/auth/me");
+      router.replace(me.role === "ADMIN" ? "/admin" : "/experiencias");
       router.refresh();
     } catch (error) {
       setMessage(errorMessage(error));
