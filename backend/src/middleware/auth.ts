@@ -97,3 +97,13 @@ export const requireOrganizer: RequestHandler = (request, _response, next) => {
     );
   next();
 };
+
+export const requireAdmin: RequestHandler = (request, _response, next) => {
+  if (request.user?.role !== "ADMIN")
+    throw new HttpError(
+      403,
+      "FORBIDDEN",
+      "Solo los administradores pueden acceder a esta sección.",
+    );
+  next();
+};

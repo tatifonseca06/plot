@@ -8,6 +8,7 @@ import { config } from "./config.js";
 import { HttpError } from "./errors.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { experienceRouter } from "./routes/experience.routes.js";
+import { adminRouter } from "./routes/admin.routes.js";
 
 export const app = express();
 
@@ -35,6 +36,7 @@ app.use(express.json({ limit: "100kb" }));
 app.use("/api", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/experiences", experienceRouter);
+app.use("/api/admin", adminRouter);
 
 app.use((_request, response) => {
   response
