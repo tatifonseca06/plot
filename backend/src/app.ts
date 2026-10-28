@@ -12,6 +12,8 @@ import { adminRouter } from "./routes/admin.routes.js";
 
 export const app = express();
 
+if (process.env.VERCEL === "1") app.set("trust proxy", 1);
+
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(cors({ origin: config.FRONTEND_URL, credentials: true }));
@@ -118,3 +120,5 @@ const handleError: express.ErrorRequestHandler = (
 };
 
 app.use(handleError);
+
+export default app;

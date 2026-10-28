@@ -1,0 +1,10 @@
+.git
+docs
+**/node_modules
+**/.next
+**/dist
+**/.env
+**/.env.*
+**/*.log
+**/*.tsbuildinfo
+backend/src/generated

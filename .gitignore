@@ -10,3 +10,4 @@ coverage/
 *.log
 backend/src/generated/
 docs/
+.vercel/

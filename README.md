@@ -8,7 +8,7 @@
 
 Plot es un proyecto universitario de Ingeniería Web. Esta primera entrega implementa **registro, login y un CRUD de experiencias**, con una estructura MVC sencilla, una API de Express y persistencia en PostgreSQL.
 
-El concepto general contempla experiencias grupales; la versión actual permite a cada organizador administrar sus propias experiencias. No está desplegada todavía.
+El concepto general contempla experiencias grupales; la versión actual permite a cada organizador administrar sus propias experiencias. La aplicación está disponible en [Plot](https://plot-sable-kappa.vercel.app).
 
 ## Contenido
 
@@ -20,6 +20,7 @@ El concepto general contempla experiencias grupales; la versión actual permite 
 - [API](#api)
 - [Pruebas](#pruebas)
 - [Solución de problemas](#solución-de-problemas)
+- [Despliegue](#despliegue)
 - [Alcance y documentación](#alcance-y-documentación)
 - [Autoría](#autoría)
 
@@ -254,9 +255,25 @@ No se presenta esta comprobación HTTP como una prueba visual automatizada en na
 | Aparece 429 al iniciar sesión | El límite es de veinte solicitudes de login/registro por IP cada quince minutos; esperar antes de reintentar. |
 | Cambiar la contraseña del `.env` no cambia la de PostgreSQL | La contraseña inicial solo configura un volumen nuevo; no modifica automáticamente un volumen ya creado. |
 
+## Despliegue
+
+**Aplicación:** https://plot-sable-kappa.vercel.app
+
+Next.js y Express se alojan en un proyecto de Vercel mediante los servicios definidos en `vercel.json`. Las rutas `/api/*` llegan a Express; las demás llegan al frontend. PostgreSQL se aloja en Neon y es independiente de la base local de Docker.
+
+El proyecto de Vercel está conectado al repositorio de GitHub. La configuración utiliza Node.js 22 y requiere estas variables en producción:
+
+- `DATABASE_URL`: conexión PostgreSQL proporcionada por Neon.
+- `FRONTEND_URL`: `https://plot-sable-kappa.vercel.app`.
+- `NODE_ENV`: `production`.
+
+Las migraciones se aplican con `npm --prefix backend run db:deploy`, usando la conexión del entorno correspondiente. No se deben ejecutar las pruebas locales de `plot_test` contra producción.
+
+Se verificaron por HTTP las páginas, registro, login, cookies seguras, CRUD de organizador y administrador, permisos, rechazo de orígenes ajenos y cierre de sesión. Las cuentas y experiencias temporales de comprobación se eliminaron al finalizar.
+
 ## Alcance y documentación
 
-Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendientes el catálogo público, moderación, sesiones de experiencias, salas, votaciones, reservas, misiones, reseñas y despliegue. Los patrones y mejoras SOLID de la entrega posterior no se presentan como implementados.
+Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendientes el catálogo público, moderación, sesiones de experiencias, salas, votaciones, reservas, misiones y reseñas. Los patrones y mejoras SOLID de la entrega posterior no se presentan como implementados.
 
 - [Notas del backend](backend/README.md).
 - [Notas del frontend](frontend/README.md).
