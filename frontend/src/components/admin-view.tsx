@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import CategoryFields from "./category-fields";
 import { useRouter } from "next/navigation";
 import { api, ApiError, errorMessage, type User } from "@/lib/api";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -14,6 +15,7 @@ type Experience = {
   id: string;
   title: string;
   category: Category;
+  subcategoryId: string | null;
   description: string;
   ownerId: string;
   owner: { fullName: string; email: string };
@@ -366,16 +368,11 @@ export default function AdminView() {
             pattern={".*\\S.*"}
           />
 
-          <label htmlFor="admin-category">Categoría</label>
-          <select
-            id="admin-category"
-            name="category"
-            defaultValue={editing?.category ?? "Cultura"}
-          >
-            {categories.map((category) => (
-              <option key={category}>{category}</option>
-            ))}
-          </select>
+          <CategoryFields
+            prefix="admin"
+            initialCategory={editing?.category}
+            initialSubcategoryId={editing?.subcategoryId}
+          />
 
           {/* Dropdown de organizadores — satisface el requisito de FK con select */}
           <label htmlFor="admin-owner">Organizador</label>

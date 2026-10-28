@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import CategoryFields from "./category-fields";
 import { useRouter } from "next/navigation";
 import { api, ApiError, errorMessage, type User } from "@/lib/api";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -12,6 +13,7 @@ type Experience = {
   id: string;
   title: string;
   category: Category;
+  subcategoryId: string | null;
   description: string;
 };
 
@@ -369,16 +371,11 @@ export default function ExperiencesView() {
             maxLength={100}
             pattern={".*\\S.*"}
           />
-          <label htmlFor="experience-category">Categoría</label>
-          <select
-            id="experience-category"
-            name="category"
-            defaultValue={editing?.category ?? "Cultura"}
-          >
-            {categories.map((category) => (
-              <option key={category}>{category}</option>
-            ))}
-          </select>
+          <CategoryFields
+            prefix="experience"
+            initialCategory={editing?.category}
+            initialSubcategoryId={editing?.subcategoryId}
+          />
           <label htmlFor="experience-description">Descripción</label>
           <textarea
             id="experience-description"

@@ -27,7 +27,8 @@ export const loginSchema = z.object({ email, password }).strict();
 export const experienceSchema = z
   .object({
     title: z.string().trim().min(1, "Escribe un título.").max(100),
-    category: z.enum(["Cultura", "Gastronomía", "Aventura"]),
+    category: z.string().trim().min(1, "Selecciona una categoría.").max(40),
+    subcategoryId: z.string().uuid("Selecciona una subcategoría."),
     description: z.string().trim().min(1, "Escribe una descripción.").max(500),
   })
   .strict();

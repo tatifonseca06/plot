@@ -29,6 +29,7 @@ El concepto general contempla experiencias grupales; la versión actual permite 
 - Registrar cuentas de participante u organizador.
 - Iniciar sesión con correo y contraseña y cerrar sesión.
 - Crear, listar, consultar, editar y eliminar experiencias propias como organizador.
+- Elegir categoría y subcategoría mediante dropdowns dependientes cargados desde PostgreSQL.
 - Validar título, categoría y descripción tanto en los formularios como en el backend.
 - Conservar los registros en PostgreSQL después de recargar o cerrar la aplicación.
 - Proteger la API con sesiones y comprobar el propietario al consultar, editar o eliminar.
@@ -206,11 +207,12 @@ Ejemplo del cuerpo para crear o actualizar una experiencia:
 {
   "title": "Ruta de cafés",
   "category": "Gastronomía",
+  "subcategoryId": "10000000-0000-4000-8000-000000000004",
   "description": "Una tarde para descubrir cafeterías locales."
 }
 ```
 
-Las categorías permitidas son `Cultura`, `Gastronomía` y `Aventura`. El propietario se obtiene de la sesión, no del cuerpo de la petición.
+El catálogo inicial incluye `Cultura`, `Gastronomía` y `Aventura`, con tres subcategorías cada una. `GET /api/categories` devuelve las categorías y sus subcategorías desde PostgreSQL y requiere sesión. Al cambiar de categoría se limpia la subcategoría seleccionada; el backend y una clave foránea compuesta impiden guardar combinaciones incorrectas. Las experiencias anteriores se conservan sin subcategoría hasta su próxima edición, cuando debe seleccionarse una. El propietario se obtiene de la sesión, no del cuerpo de la petición.
 
 Las respuestas correctas usan `{ "data": ... }` y los errores `{ "error": { "code": "...", "message": "..." } }`. El borrado y el logout responden 204 sin cuerpo. Para probar escrituras desde Postman o curl, enviar `Origin: http://localhost:3000` y conservar la cookie del login para las rutas protegidas.
 
@@ -239,7 +241,7 @@ npm --prefix backend test
 
 El comando de creación de base solo se ejecuta una vez. Las pruebas se niegan a utilizar otra base y limpian únicamente sus propios usuarios y registros.
 
-**Resultado comprobado:** 15 subcasos funcionales correctos (16 pruebas contando el caso padre), incluyendo registro, login, CRUD persistente, listado completo, acceso a recursos ajenos, roles, vencimiento y cierre de sesión. También se comprobó la integración HTTP de Next.js con Express y PostgreSQL.
+**Resultado comprobado:** 17 subcasos funcionales correctos (18 pruebas contando el caso padre), incluyendo registro, login, CRUD persistente, listado completo, acceso a recursos ajenos, roles, vencimiento y cierre de sesión. También se comprobó la integración HTTP de Next.js con Express y PostgreSQL.
 
 No se presenta esta comprobación HTTP como una prueba visual automatizada en navegador.
 

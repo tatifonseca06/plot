@@ -25,6 +25,7 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async (t) => {
   const experience = {
     title: "Atardecer de prueba",
     category: "Cultura",
+    subcategoryId: "10000000-0000-4000-8000-000000000001",
     description: "Experiencia creada por una prueba funcional.",
   };
 
@@ -62,6 +63,10 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async (t) => {
           assert.equal((await request(path, method, body)).status, 401);
       },
     );
+
+    await t.test("El catálogo requiere sesión", async () => {
+      assert.equal((await request("/categories")).status, 401);
+    });
 
     await t.test(
       "Registro valida campos, contraseñas y rol; nunca permite crear administradores",
@@ -193,6 +198,7 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async (t) => {
         assert.equal(created.status, 201);
         experienceId = created.payload.data.id;
         assert.equal(created.payload.data.ownerId, userIds[0]);
+        assert.equal(created.payload.data.subcategoryId, experience.subcategoryId);
         const list = await request(
           "/experiences",
           "GET",
@@ -439,6 +445,31 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async (t) => {
       },
     );
 
+    await t.test("Catálogo relacional y rechazo de combinaciones inválidas", async () => {
+      // Establish a fresh session because earlier tests exercise logout/expiry.
+      const login = await request("/auth/login", "POST", { email: emails[0], password });
+      assert.equal(login.status, 200);
+      const cookie = login.headers.get("set-cookie")!.split(";")[0];
+      const catalog = await request("/categories", "GET", undefined, cookie);
+      assert.equal(catalog.status, 200);
+      const culture = catalog.payload.data.items.find((item: { name: string }) => item.name === "Cultura");
+      assert.ok(culture.subcategories.some((item: { id: string }) => item.id === experience.subcategoryId));
+      const existing = await request("/experiences", "GET", undefined, cookie);
+      const targetId = existing.payload.data.items[0].id;
+      for (const change of [
+        { subcategoryId: "10000000-0000-4000-8000-000000000004" },
+        { subcategoryId: randomUUID() },
+        { subcategoryId: undefined },
+      ]) {
+        const result = await request("/experiences", "POST", { ...experience, ...change }, cookie);
+        assert.equal(result.status, 400);
+        const update = await request(`/experiences/${targetId}`, "PUT", { ...experience, ...change }, cookie);
+        assert.equal(update.status, 400);
+      }
+      const stored = await prisma.experience.findUniqueOrThrow({ where: { id: targetId } });
+      assert.equal(stored.subcategoryId, experience.subcategoryId);
+      assert.equal(stored.ownerId, userIds[0]);
+    });
     await t.test("El login limita los intentos repetidos", async () => {
       let status = 0;
       for (let i = 0; i < 21 && status !== 429; i++) {

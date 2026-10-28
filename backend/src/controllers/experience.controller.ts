@@ -1,3 +1,4 @@
+import { validateSubcategory } from "./category.controller.js";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
 import { HttpError } from "../errors.js";
@@ -25,6 +26,7 @@ export const get: RequestHandler = async (request, response) => {
 
 export const create: RequestHandler = async (request, response) => {
   const data = experienceSchema.parse(request.body);
+  await validateSubcategory(data.category, data.subcategoryId);
   const experience = await prisma.experience.create({
     data: { ...data, ownerId: request.user!.id },
   });
@@ -37,6 +39,7 @@ export const create: RequestHandler = async (request, response) => {
 export const update: RequestHandler = async (request, response) => {
   const id = idSchema.parse(request.params.id);
   const data = experienceSchema.parse(request.body);
+  await validateSubcategory(data.category, data.subcategoryId);
   // Filtrar por propietario también al actualizar evita modificar datos ajenos.
   const experience = await prisma.experience.update({
     where: { id, ownerId: request.user!.id },

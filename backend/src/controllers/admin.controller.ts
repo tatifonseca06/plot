@@ -1,3 +1,4 @@
+import { validateSubcategory } from "./category.controller.js";
 import type { RequestHandler } from "express";
 import { prisma } from "../db.js";
 import { HttpError } from "../errors.js";
@@ -22,6 +23,7 @@ export const listExperiences: RequestHandler = async (_request, response) => {
 
 export const create: RequestHandler = async (request, response) => {
   const data = adminExperienceSchema.parse(request.body);
+  await validateSubcategory(data.category, data.subcategoryId);
 
   // Validación de dato sensible: el ownerId debe pertenecer a un ORGANIZER real.
   const owner = await prisma.user.findUnique({ where: { id: data.ownerId } });
@@ -42,6 +44,7 @@ export const create: RequestHandler = async (request, response) => {
 export const update: RequestHandler = async (request, response) => {
   const id = idSchema.parse(request.params.id);
   const data = adminExperienceSchema.parse(request.body);
+  await validateSubcategory(data.category, data.subcategoryId);
 
   // Validación de dato sensible: el nuevo ownerId también debe ser ORGANIZER.
   const owner = await prisma.user.findUnique({ where: { id: data.ownerId } });

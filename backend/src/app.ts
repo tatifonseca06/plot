@@ -10,6 +10,9 @@ import { authRouter } from "./routes/auth.routes.js";
 import { experienceRouter } from "./routes/experience.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 
+import { requireAuth } from "./middleware/auth.js";
+import { list as listCategories } from "./controllers/category.controller.js";
+
 export const app = express();
 
 if (process.env.VERCEL === "1") app.set("trust proxy", 1);
@@ -39,6 +42,7 @@ app.use("/api", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/experiences", experienceRouter);
 app.use("/api/admin", adminRouter);
+app.get("/api/categories", requireAuth, listCategories);
 
 app.use((_request, response) => {
   response
