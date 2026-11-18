@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, errorMessage } from "@/lib/api";
-import { invitationReturn } from "@/lib/return-to";
+import { safeReturnTo } from "@/lib/return-to";
 import styles from "@/app/page.module.css";
 
 export default function LoginForm({
@@ -32,7 +32,7 @@ export default function LoginForm({
           password: data.get("password"),
         }),
       });
-      router.replace(invitationReturn(returnTo));
+      router.replace(safeReturnTo(returnTo));
       router.refresh();
     } catch (error) {
       setMessage(errorMessage(error));
@@ -83,7 +83,7 @@ export default function LoginForm({
         <Link
           href={
             returnTo
-              ? `/registro?next=${encodeURIComponent(invitationReturn(returnTo))}`
+              ? `/registro?next=${encodeURIComponent(safeReturnTo(returnTo))}`
               : "/registro"
           }
         >

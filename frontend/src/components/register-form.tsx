@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import styles from "@/app/page.module.css";
 import { useRouter } from "next/navigation";
-import { invitationReturn } from "@/lib/return-to";
+import { safeReturnTo } from "@/lib/return-to";
 import { api, errorMessage } from "@/lib/api";
 
 export default function RegisterForm({ returnTo }: { returnTo?: string }) {
@@ -34,7 +34,7 @@ export default function RegisterForm({ returnTo }: { returnTo?: string }) {
         body: JSON.stringify(Object.fromEntries(data)),
       });
       router.replace(
-        `/?registro=correcto${returnTo ? `&next=${encodeURIComponent(invitationReturn(returnTo))}` : ""}`,
+        `/?registro=correcto${returnTo ? `&next=${encodeURIComponent(safeReturnTo(returnTo))}` : ""}`,
       );
     } catch (error) {
       setMessage(errorMessage(error));
@@ -116,7 +116,7 @@ export default function RegisterForm({ returnTo }: { returnTo?: string }) {
         <Link
           href={
             returnTo
-              ? `/?next=${encodeURIComponent(invitationReturn(returnTo))}`
+              ? `/?next=${encodeURIComponent(safeReturnTo(returnTo))}`
               : "/"
           }
         >
