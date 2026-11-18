@@ -7,7 +7,12 @@ export const metadata: Metadata = {
   title: "Crea tu cuenta | Plot",
 };
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
   return (
     <main className={styles.page}>
       <AuthBrand />
@@ -15,8 +20,11 @@ export default function RegisterPage() {
         <div className={styles.content}>
           <p className={styles.eyebrow}>Empieza a crear planes</p>
           <h2 id="register-title">Crea tu cuenta</h2>
-          <p className={styles.subtitle}>Completa tus datos para comenzar.</p>
-          <RegisterForm />
+          <p className={styles.subtitle}>
+            Con una sola cuenta puedes crear planes y sumarte a los de tus
+            amigos.
+          </p>
+          <RegisterForm returnTo={next} />
         </div>
       </section>
     </main>

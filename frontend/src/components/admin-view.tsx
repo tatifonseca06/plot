@@ -17,6 +17,7 @@ type Experience = {
   category: Category;
   subcategoryId: string | null;
   description: string;
+  status: string;
   ownerId: string;
   owner: { fullName: string; email: string };
 };
@@ -209,6 +210,7 @@ export default function AdminView() {
           </span>
           plot
         </Link>
+        <nav><Link href="/catalogo">Explorar</Link>{" · "}<Link href="/salas">Salas</Link>{" · "}<Link href="/reservas">Reservas</Link>{user.role === "ADMIN" && <> · <Link href="/moderacion">Moderación</Link></>}</nav>
         <button className={styles.exit} onClick={logout} disabled={pending}>
           <Icon name="exit" />
           <span>Cerrar sesión</span>
@@ -286,7 +288,7 @@ export default function AdminView() {
                   !error &&
                   experiences.map((experience) => (
                     <tr key={experience.id}>
-                      <th scope="row">{experience.title}</th>
+                      <th scope="row">{experience.title}<br /><small>{({ DRAFT: "Borrador", PENDING: "En revisión", PUBLISHED: "Publicada", REJECTED: "Rechazada", ARCHIVED: "Retirada" } as Record<string, string>)[experience.status]}</small><br /><Link href={`/gestionar/${experience.id}`}>Fechas, misiones y publicación →</Link></th>
                       <td>
                         <span
                           className={`${styles.category} ${styles[`category${categories.indexOf(experience.category)}`]}`}

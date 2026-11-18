@@ -107,3 +107,13 @@ export const requireAdmin: RequestHandler = (request, _response, next) => {
     );
   next();
 };
+
+// Public plans are readable without signing in; private details need a valid member session.
+export const optionalAuth: RequestHandler = async (request, _response, next) => {
+  const token = readSessionCookie(request);
+  if (token && /^[a-f0-9]{64}$/.test(token)) {
+    const session = await prisma.session.findUnique({ where: { id: hashToken(token) }, include: { user: { select: userFields } } });
+    if (session && session.expiresAt > new Date()) request.user = session.user;
+  }
+  next();
+};

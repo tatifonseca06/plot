@@ -1,451 +1,182 @@
 "use client";
-
 import Link from "next/link";
-import CategoryFields from "./category-fields";
-import { useRouter } from "next/navigation";
-import { api, ApiError, errorMessage, type User } from "@/lib/api";
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import styles from "./experiences.module.css";
-
-const categories = ["Cultura", "Gastronomía", "Aventura"] as const;
-type Category = (typeof categories)[number];
-type Experience = {
-  id: string;
-  title: string;
-  category: Category;
-  subcategoryId: string | null;
-  description: string;
-};
-
-type ExperienceList = {
-  items: Experience[];
-  total: number;
-};
-
-function Icon({
-  name,
-}: {
-  name: "plus" | "edit" | "delete" | "exit" | "check";
-}) {
-  const paths = {
-    plus: "M12 5v14M5 12h14",
-    edit: "m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15l-1 6Z",
-    delete: "M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 10v7M14 10v7",
-    exit: "M14 4h6v16h-6M3 12h12M10 7l5 5-5 5",
-    check: "m5 12 4 4L19 6",
-  };
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={paths[name]} />
-    </svg>
+import { useState } from "react";
+import { useResource } from "./community/shared";
+import { date, type Experience } from "./community/types";
+import StudioShell, { s, useActor } from "./studio/shell";
+import { Icon, Cover } from "./studio/icons";
+function Dashboard() {
+  const actor = useActor();
+  const result = useResource<{ items: Experience[] }>("/experiences");
+  const [filter, setFilter] = useState("ALL");
+  const [query, setQuery] = useState("");
+  const plans = result.data?.items ?? [];
+  const filtered = plans.filter(
+    (p) =>
+      (filter === "ALL" ||
+        (filter === "MINE"
+          ? p.ownerId === actor.id
+          : p.ownerId !== actor.id)) &&
+      p.title.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
   );
-}
-
-export default function ExperiencesView() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [total, setTotal] = useState(0);
-  const [revision, setRevision] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [dialogError, setDialogError] = useState("");
-  const [editing, setEditing] = useState<Experience | null>(null);
-  const [editorVersion, setEditorVersion] = useState(0);
-  const [deleting, setDeleting] = useState<Experience | null>(null);
-  const editor = useRef<HTMLDialogElement>(null);
-  const confirmation = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    let active = true;
-    async function load() {
-      setLoading(true);
-      setError("");
-      try {
-        const currentUser = await api<User>("/auth/me");
-        if (!active) return;
-        setUser(currentUser);
-        if (currentUser.role === "ORGANIZER") {
-          const result = await api<ExperienceList>("/experiences");
-          if (!active) return;
-          setExperiences(result.items);
-          setTotal(result.total);
-        }
-      } catch (failure) {
-        if (!active) return;
-        if (failure instanceof ApiError && failure.status === 401) {
-          setUser(null);
-          router.replace("/");
-        } else setError(errorMessage(failure));
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    void load();
-    return () => {
-      active = false;
-    };
-  }, [revision, router]);
-
-  useEffect(() => {
-    if (editorVersion > 0) editor.current?.showModal();
-  }, [editorVersion]);
-
-  function reportFailure(failure: unknown, inDialog = false) {
-    if (failure instanceof ApiError && failure.status === 401) {
-      editor.current?.close();
-      confirmation.current?.close();
-      setUser(null);
-      router.replace("/");
-    } else if (inDialog) setDialogError(errorMessage(failure));
-    else setError(errorMessage(failure));
-  }
-
-  function openEditor(experience: Experience | null) {
-    setDialogError("");
-    setEditing(experience);
-    setEditorVersion((current) => current + 1);
-  }
-
-  async function saveExperience(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (pending) return;
-    const data = new FormData(event.currentTarget);
-    setPending(true);
-    setDialogError("");
-    try {
-      await api<Experience>(
-        editing ? `/experiences/${editing.id}` : "/experiences",
-        {
-          method: editing ? "PUT" : "POST",
-          body: JSON.stringify(Object.fromEntries(data)),
-        },
-      );
-      setMessage(
-        editing
-          ? "Experiencia actualizada correctamente."
-          : "Experiencia creada correctamente.",
-      );
-      editor.current?.close();
-      setRevision((current) => current + 1);
-    } catch (failure) {
-      reportFailure(failure, true);
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function deleteExperience() {
-    if (!deleting || pending) return;
-    setPending(true);
-    setDialogError("");
-    try {
-      await api(`/experiences/${deleting.id}`, { method: "DELETE" });
-      setMessage("Experiencia eliminada correctamente.");
-      confirmation.current?.close();
-      setRevision((current) => current + 1);
-    } catch (failure) {
-      reportFailure(failure, true);
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function logout() {
-    if (pending) return;
-    setPending(true);
-    try {
-      await api("/auth/logout", { method: "POST" });
-      setUser(null);
-      router.replace("/");
-      router.refresh();
-    } catch (failure) {
-      reportFailure(failure);
-    } finally {
-      setPending(false);
-    }
-  }
-
-  if (!user)
-    return (
-      <main className={styles.sessionState} aria-busy={loading}>
-        <h1>Plot</h1>
-        <p role="status">{error || "Comprobando tu sesión…"}</p>
-        {error && (
-          <button
-            className={styles.secondary}
-            onClick={() => setRevision((current) => current + 1)}
-          >
+  return (
+    <>
+      <div className={s.heading}>
+        <div>
+          <p className={s.eyebrow}>MENOS “ALGÚN DÍA”. MÁS “NOS VEMOS”.</p>
+          <h1>¿Qué hacemos, {actor.fullName.split(" ")[0]}?</h1>
+          <p>Crea un plan, invita a tus amigos y confirmen quién se apunta.</p>
+        </div>
+        <Link className={s.primary} href="/experiencias/nueva">
+          <Icon name="plus" size={18} />
+          Crear un plan
+        </Link>
+      </div>
+      <div className={s.choiceGrid} style={{ marginBottom: 32 }}>
+        <Link className={s.choice} href="/experiencias/nueva">
+          <Icon name="spark" size={24} />
+          <strong>Tengo una idea</strong>
+          <small>
+            Un café, una salida o lo que se les ocurra. Crea el plan y decide
+            los detalles con tu grupo.
+          </small>
+          <span className={s.muted}>Crear plan →</span>
+        </Link>
+        <Link className={s.choice} href="/salas">
+          <Icon name="users" size={24} />
+          <strong>Me invitaron a un plan</strong>
+          <small>
+            Si te compartieron un código, pégalo aquí para entrar al grupo.
+          </small>
+          <span className={s.muted}>Usar una invitación →</span>
+        </Link>
+      </div>
+      <div className={s.toolbar}>
+        <div className={s.filters} role="group" aria-label="Filtrar planes">
+          {[
+            { id: "ALL", label: "Todos mis planes" },
+            { id: "MINE", label: "Los que organizo" },
+            { id: "INVITED", label: "Me invitaron" },
+          ].map((f) => (
+            <button
+              key={f.id}
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className={s.searchRow}>
+        <label className={s.search}>
+          <span className={s.srOnly}>Buscar un plan</span>
+          <Icon name="search" size={18} />
+          <input
+            placeholder="Busca un plan por su nombre…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </label>
+      </div>
+      {result.error && (
+        <p className={s.error} role="alert">
+          {result.error}
+          <button className={s.textButton} onClick={result.refresh}>
             Reintentar
           </button>
-        )}
-        <Link href="/">Volver al inicio de sesión</Link>
-      </main>
-    );
-  const canManage = user.role === "ORGANIZER";
-
-  return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <Link
-          href="/experiencias"
-          className={styles.logo}
-          aria-label="Plot, mis experiencias"
-        >
-          <span className={styles.logoIcon} aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="currentColor">
-              <path d="m25 7 3.5 10.5L39 21l-10.5 3.5L25 35l-3.5-10.5L11 21l10.5-3.5L25 7Zm-14 23 1.7 5.3L18 37l-5.3 1.7L11 44l-1.7-5.3L4 37l5.3-1.7L11 30Zm27-3 1.5 4.5L44 33l-4.5 1.5L38 39l-1.5-4.5L32 33l4.5-1.5L38 27Z" />
-            </svg>
-          </span>
-          plot
-        </Link>
-        <button className={styles.exit} onClick={logout} disabled={pending}>
-          <Icon name="exit" />
-          <span>Cerrar sesión</span>
-        </button>
-      </header>
-
-      <main className={styles.main}>
-        <div className={styles.heading}>
-          <div>
-            <p className={styles.eyebrow}>Tu colección</p>
-            <h1>Mis experiencias</h1>
-            <p className={styles.subtitle}>
-              Ideas simples para convertir el chat en un plan real.
-            </p>
-          </div>
-          {canManage && (
-            <button
-              className={styles.primary}
-              onClick={() => openEditor(null)}
-              disabled={pending || loading}
-            >
-              <Icon name="plus" />
-              Nueva experiencia
-            </button>
-          )}
+        </p>
+      )}
+      {result.loading ? (
+        <p role="status" className={s.loading}>
+          Buscando tus planes…
+        </p>
+      ) : (
+        <div className={s.grid}>
+          {filtered.map((p) => {
+            const next = p.occurrences.find(
+              (o) =>
+                o.status === "SCHEDULED" && new Date(o.startsAt) > new Date(),
+            );
+            const destination = p.group
+              ? `/salas/${p.group.id}`
+              : `/gestionar/${p.id}`;
+            return (
+              <article className={s.experienceCard} key={p.id}>
+                <div className={s.coverWrap}>
+                  <Cover theme={p.coverTheme} category={p.category} />
+                  <span className={s.badge}>
+                    {p.visibility === "PRIVATE"
+                      ? "Solo con invitación"
+                      : "Público"}
+                  </span>
+                </div>
+                <div className={s.cardContent}>
+                  <h2>
+                    <Link href={destination}>{p.title}</Link>
+                  </h2>
+                  <p className={s.cardDescription}>
+                    {p.description ||
+                      "El próximo encuentro empieza aquí. Entren al plan para organizarse."}
+                  </p>
+                  <div className={s.cardMeta}>
+                    <p>
+                      <Icon name="calendar" size={15} />
+                      {p.group && !p.group.closed
+                        ? "Elijan una fecha juntos"
+                        : next
+                          ? date(next.startsAt)
+                          : "Ver fechas del plan"}
+                    </p>
+                    <p>
+                      <Icon name="users" size={15} />
+                      {p.group?._count?.members ?? 1} en el grupo ·{" "}
+                      {p.ownerId === actor.id ? "Tú organizas" : "Te invitaron"}
+                    </p>
+                  </div>
+                  <Link className={s.primary} href={destination}>
+                    Abrir plan
+                    <Icon name="arrow" size={16} />
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
-        {error && (
-          <div className={styles.error} role="alert">
-            {error}{" "}
-            <button
-              className={styles.secondary}
-              onClick={() => setRevision((current) => current + 1)}
-            >
-              Reintentar
-            </button>
-          </div>
-        )}
-        {!canManage && (
-          <p className={styles.notice}>
-            Tienes una cuenta de participante. La creación de experiencias está
-            reservada a organizadores. El catálogo para participantes llegará en
-            una siguiente etapa.
-          </p>
-        )}
-        {canManage && !error && (loading || message) && (
-          <p className={styles.notice} role="status">
-            {!loading && !error && (
-              <span className={styles.check}>
-                <Icon name="check" />
-              </span>
-            )}
-            {loading ? "Cargando experiencias…" : message}
-          </p>
-        )}
-        {canManage && (
-          <>
-            <div className={styles.collection} aria-busy={loading}>
-              <div className={styles.tableScroll}>
-                <table className={styles.table}>
-                  <caption className={styles.srOnly}>
-                    Mis experiencias guardadas en Plot
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Título</th>
-                      <th scope="col">Categoría</th>
-                      <th scope="col">Descripción</th>
-                      <th scope="col" className={styles.actionsHeading}>
-                        Acciones
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {!loading &&
-                      !error &&
-                      experiences.map((experience) => (
-                        <tr key={experience.id}>
-                          <th scope="row">{experience.title}</th>
-                          <td>
-                            <span
-                              className={`${styles.category} ${styles[`category${categories.indexOf(experience.category)}`]}`}
-                            >
-                              {experience.category}
-                            </span>
-                          </td>
-                          <td className={styles.description}>
-                            {experience.description}
-                          </td>
-                          <td>
-                            <div className={styles.actions}>
-                              <button
-                                disabled={pending}
-                                className={styles.secondary}
-                                aria-label={`Editar ${experience.title}`}
-                                onClick={() => openEditor(experience)}
-                              >
-                                <Icon name="edit" />
-                                Editar
-                              </button>
-                              <button
-                                disabled={pending}
-                                className={styles.danger}
-                                aria-label={`Eliminar ${experience.title}`}
-                                onClick={() => {
-                                  setDialogError("");
-                                  setDeleting(experience);
-                                  confirmation.current?.showModal();
-                                }}
-                              >
-                                <Icon name="delete" />
-                                Eliminar
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-              {!loading && !error && experiences.length === 0 && (
-                <p className={styles.empty}>
-                  Tu colección está vacía. Crea tu primera experiencia.
-                </p>
-              )}
-              <p className={styles.count}>
-                {total}{" "}
-                {total === 1
-                  ? "experiencia guardada"
-                  : "experiencias guardadas"}
-              </p>
-            </div>
-          </>
-        )}
-      </main>
-
-      <dialog
-        ref={editor}
-        className={styles.dialog}
-        aria-labelledby="editor-title"
-        onCancel={(event) => {
-          if (pending) event.preventDefault();
-        }}
-      >
-        <form key={editorVersion} onSubmit={saveExperience}>
-          <h2 id="editor-title">
-            {editing ? "Editar experiencia" : "Nueva experiencia"}
+      )}
+      {!result.loading && !result.error && !filtered.length && (
+        <div className={s.empty}>
+          <Icon name="users" size={40} />
+          <h2>
+            {plans.length
+              ? "No encontramos ese plan"
+              : "Tu primer plan está a una idea de distancia"}
           </h2>
           <p>
-            Guarda los datos básicos de tu experiencia. Todavía no se publicará
-            en un catálogo.
+            {plans.length
+              ? "Prueba otro nombre o cambia el filtro."
+              : "No hace falta tener fecha ni lugar: puedes crear el grupo y decidirlo con tus amigos."}
           </p>
-          <label htmlFor="experience-title">Título</label>
-          <input
-            id="experience-title"
-            name="title"
-            defaultValue={editing?.title ?? ""}
-            required
-            maxLength={100}
-            pattern={".*\\S.*"}
-          />
-          <CategoryFields
-            prefix="experience"
-            initialCategory={editing?.category}
-            initialSubcategoryId={editing?.subcategoryId}
-          />
-          <label htmlFor="experience-description">Descripción</label>
-          <textarea
-            id="experience-description"
-            name="description"
-            defaultValue={editing?.description ?? ""}
-            required
-            maxLength={500}
-            rows={4}
-            onInput={(event) =>
-              event.currentTarget.setCustomValidity(
-                event.currentTarget.value.trim()
-                  ? ""
-                  : "Escribe una descripción.",
-              )
-            }
-          />
-          {dialogError && (
-            <p className={styles.error} role="alert">
-              {dialogError}
-            </p>
-          )}
-          <div className={styles.dialogActions}>
-            <button
-              disabled={pending}
-              type="button"
-              className={styles.secondary}
-              onClick={() => editor.current?.close()}
-            >
-              Cancelar
-            </button>
-            <button disabled={pending} className={styles.primary} type="submit">
-              {pending ? "Guardando…" : "Guardar"}
-            </button>
-          </div>
-        </form>
-      </dialog>
-      <dialog
-        ref={confirmation}
-        className={styles.dialog}
-        aria-labelledby="delete-title"
-        onCancel={(event) => {
-          if (pending) event.preventDefault();
-        }}
-      >
-        <h2 id="delete-title">¿Eliminar experiencia?</h2>
-        <p>
-          Se eliminará «{deleting?.title}». Esta acción no se puede deshacer.
-        </p>
-        {dialogError && (
-          <p className={styles.error} role="alert">
-            {dialogError}
-          </p>
-        )}
-        <div className={styles.dialogActions}>
-          <button
-            disabled={pending}
-            className={styles.secondary}
-            onClick={() => confirmation.current?.close()}
-          >
-            Cancelar
-          </button>
-          <button
-            disabled={pending}
-            className={styles.danger}
-            onClick={deleteExperience}
-          >
-            {pending ? "Eliminando…" : "Eliminar"}
-          </button>
+          <Link className={s.primary} href="/experiencias/nueva">
+            Crear mi primer plan <Icon name="arrow" size={16} />
+          </Link>
         </div>
-      </dialog>
-    </div>
+      )}
+      <aside className={s.tip}>
+        <Icon name="compass" size={24} />
+        <div>
+          <strong>¿Buscas inspiración?</strong>
+          <p>Descubre los planes abiertos de la comunidad y súmate a uno.</p>
+        </div>
+        <Link href="/catalogo">Explorar planes →</Link>
+      </aside>
+    </>
+  );
+}
+export default function ExperiencesView() {
+  return (
+    <StudioShell>
+      <Dashboard />
+    </StudioShell>
   );
 }

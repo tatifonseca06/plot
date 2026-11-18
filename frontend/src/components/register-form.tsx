@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import styles from "@/app/page.module.css";
 import { useRouter } from "next/navigation";
+import { invitationReturn } from "@/lib/return-to";
 import { api, errorMessage } from "@/lib/api";
 
-export default function RegisterForm() {
+export default function RegisterForm({ returnTo }: { returnTo?: string }) {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmationRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
@@ -32,7 +33,9 @@ export default function RegisterForm() {
         method: "POST",
         body: JSON.stringify(Object.fromEntries(data)),
       });
-      router.replace("/?registro=correcto");
+      router.replace(
+        `/?registro=correcto${returnTo ? `&next=${encodeURIComponent(invitationReturn(returnTo))}` : ""}`,
+      );
     } catch (error) {
       setMessage(errorMessage(error));
     } finally {
@@ -104,21 +107,21 @@ export default function RegisterForm() {
             required
           />
         </div>
-        <div className={styles.field}>
-          <label htmlFor="role">Tipo de cuenta</label>
-          <select id="role" name="role" defaultValue="PARTICIPANT">
-            <option value="PARTICIPANT">
-              Participante — descubrir experiencias
-            </option>
-            <option value="ORGANIZER">Organizador — crear experiencias</option>
-          </select>
-        </div>
         <button className={styles.submit} type="submit" disabled={pending}>
           {pending ? "Creando cuenta…" : "Crear cuenta"}
         </button>
       </form>
       <p className={styles.registration}>
-        ¿Ya tienes cuenta? <Link href="/">Inicia sesión</Link>
+        ¿Ya tienes cuenta?{" "}
+        <Link
+          href={
+            returnTo
+              ? `/?next=${encodeURIComponent(invitationReturn(returnTo))}`
+              : "/"
+          }
+        >
+          Inicia sesión
+        </Link>
       </p>
       <p className={styles.feedback} role="status">
         {message}

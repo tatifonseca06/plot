@@ -16,7 +16,19 @@ export const listOrganizers: RequestHandler = async (_request, response) => {
 export const listExperiences: RequestHandler = async (_request, response) => {
   const items = await prisma.experience.findMany({
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    include: { owner: { select: { fullName: true, email: true } } },
+    include: {
+      owner: { select: { fullName: true, email: true } },
+      subcategory: true,
+      _count: { select: { missions: true } },
+      occurrences: {
+        orderBy: { startsAt: "asc" },
+        include: {
+          _count: {
+            select: { reservations: { where: { status: "CONFIRMED" } } },
+          },
+        },
+      },
+    },
   });
   response.json({ data: { items, total: items.length } });
 };
@@ -55,7 +67,10 @@ export const update: RequestHandler = async (request, response) => {
       "El propietario debe ser un organizador registrado.",
     );
 
-  const experience = await prisma.experience.update({ where: { id }, data });
+  const experience = await prisma.experience.update({
+    where: { id },
+    data: { ...data, status: "DRAFT", moderationNote: null },
+  });
   response.json({ data: experience });
 };
 

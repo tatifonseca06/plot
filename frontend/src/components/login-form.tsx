@@ -3,13 +3,16 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { api, errorMessage, type User } from "@/lib/api";
+import { api, errorMessage } from "@/lib/api";
+import { invitationReturn } from "@/lib/return-to";
 import styles from "@/app/page.module.css";
 
 export default function LoginForm({
   registered = false,
+  returnTo,
 }: {
   registered?: boolean;
+  returnTo?: string;
 }) {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
@@ -29,8 +32,7 @@ export default function LoginForm({
           password: data.get("password"),
         }),
       });
-      const me = await api<User>("/auth/me");
-      router.replace(me.role === "ADMIN" ? "/admin" : "/experiencias");
+      router.replace(invitationReturn(returnTo));
       router.refresh();
     } catch (error) {
       setMessage(errorMessage(error));
@@ -75,7 +77,18 @@ export default function LoginForm({
         </button>
       </form>
       <p className={styles.registration}>
-        ¿No tienes cuenta? <Link href="/registro">Regístrate</Link>
+        <Link href="/catalogo">Explorar sin cuenta</Link>
+        <br />
+        ¿No tienes cuenta?{" "}
+        <Link
+          href={
+            returnTo
+              ? `/registro?next=${encodeURIComponent(invitationReturn(returnTo))}`
+              : "/registro"
+          }
+        >
+          Regístrate
+        </Link>
       </p>
       <p className={styles.feedback} role="status">
         {message}

@@ -8,6 +8,7 @@ import { config } from "./config.js";
 import { HttpError } from "./errors.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { experienceRouter } from "./routes/experience.routes.js";
+import { communityRouter } from "./routes/community.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 
 import { requireAuth } from "./middleware/auth.js";
@@ -43,6 +44,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/experiences", experienceRouter);
 app.use("/api/admin", adminRouter);
 app.get("/api/categories", requireAuth, listCategories);
+app.use("/api", communityRouter);
 
 app.use((_request, response) => {
   response
@@ -82,17 +84,21 @@ const handleError: express.ErrorRequestHandler = (
       .status(409)
       .json({
         error: {
-          code: "EMAIL_IN_USE",
-          message: "Ya existe una cuenta con ese correo.",
+          code: "DUPLICATE",
+          message: "Ese registro ya existe. Si estás creando una cuenta, revisa el correo.",
         },
       });
+    return;
+  }
+  if (error.code === "P2003") {
+    response.status(409).json({ error: { code: "IN_USE", message: "No se puede eliminar: tiene reservas o propuestas asociadas. Retira la publicación o cancela sus fechas." } });
     return;
   }
   if (error.code === "P2025") {
     response
       .status(404)
       .json({
-        error: { code: "NOT_FOUND", message: "Experiencia no encontrada." },
+        error: { code: "NOT_FOUND", message: "Registro no encontrado." },
       });
     return;
   }

@@ -172,16 +172,16 @@ test("Registro, sesiones y CRUD con PostgreSQL real", async (t) => {
     );
 
     await t.test(
-      "Participantes no pueden acceder al CRUD del organizador",
+      "Cualquier cuenta puede crear y listar sus planes",
       async () => {
         assert.equal(
           (await request("/experiences", "GET", undefined, cookies[2])).status,
-          403,
+          200,
         );
         assert.equal(
           (await request("/experiences", "POST", experience, cookies[2]))
             .status,
-          403,
+          201,
         );
       },
     );

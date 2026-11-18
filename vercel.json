@@ -12,11 +12,21 @@
       "framework": "express",
       "entrypoint": "src/app.ts",
       "installCommand": "npm ci --include=dev",
-      "buildCommand": "npm run generate && npm run typecheck"
+      "buildCommand": "node scripts/vercel-build.mjs"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": { "service": "backend" } },
-    { "source": "/(.*)", "destination": { "service": "frontend" } }
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "backend"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "frontend"
+      }
+    }
   ]
 }

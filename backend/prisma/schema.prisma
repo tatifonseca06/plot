@@ -23,6 +23,11 @@ model User {
   createdAt DateTime @default(now())
   sessions Session[]
   experiences Experience[]
+  reservations Reservation[]
+  rooms Room[]
+  memberships RoomMember[]
+  proposals Proposal[]
+  votes Vote[]
 }
 
 model Session {
@@ -42,10 +47,21 @@ model Experience {
   subcategoryId String? @db.Uuid
   subcategory Subcategory? @relation(fields: [subcategoryId, category], references: [id, categoryName], onDelete: Restrict)
   description String @db.VarChar(500)
+  city String @default("") @db.VarChar(100)
+  itinerary String @default("") @db.VarChar(2000)
+  included String @default("") @db.VarChar(1000)
+  requirements String @default("") @db.VarChar(1000)
+  coverTheme String @default("LAVENDER") @db.VarChar(20)
   ownerId String @db.Uuid
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  status PublicationStatus @default(DRAFT)
+  visibility PlanVisibility @default(PRIVATE)
+  group Room?
+  moderationNote String? @db.VarChar(500)
+  occurrences Occurrence[]
+  missions Mission[]
   @@index([ownerId, createdAt])
 }
 
@@ -63,4 +79,139 @@ model Subcategory {
   experiences Experience[]
   @@unique([id, categoryName])
   @@unique([categoryName, name])
+}
+
+
+enum PlanVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum PublicationStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum OccurrenceStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model Occurrence {
+  id String @id @default(uuid()) @db.Uuid
+  experienceId String @db.Uuid
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  startsAt DateTime
+  endsAt DateTime
+  location String @db.VarChar(200)
+  capacity Int
+  status OccurrenceStatus @default(SCHEDULED)
+  reservations Reservation[]
+  proposals Proposal[]
+  @@index([experienceId, startsAt])
+}
+
+model Reservation {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  occurrenceId String @db.Uuid
+  occurrence Occurrence @relation(fields: [occurrenceId], references: [id], onDelete: Restrict)
+  status ReservationStatus @default(CONFIRMED)
+  attended Boolean @default(false)
+  createdAt DateTime @default(now())
+  review Review?
+  completions MissionCompletion[]
+  @@unique([userId, occurrenceId])
+  @@index([occurrenceId, status])
+}
+
+model Review {
+  id String @id @default(uuid()) @db.Uuid
+  reservationId String @unique @db.Uuid
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  rating Int
+  comment String @db.VarChar(1000)
+  hidden Boolean @default(false)
+  moderationNote String? @db.VarChar(500)
+  createdAt DateTime @default(now())
+}
+
+model Mission {
+  id String @id @default(uuid()) @db.Uuid
+  experienceId String @db.Uuid
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  title String @db.VarChar(100)
+  description String @db.VarChar(500)
+  points Int @default(10)
+  completions MissionCompletion[]
+}
+
+model MissionCompletion {
+  missionId String @db.Uuid
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  reservationId String @db.Uuid
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+  @@id([missionId, reservationId])
+}
+
+model Room {
+  experienceId String? @unique @db.Uuid
+  experience Experience? @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(100)
+  code String @unique @db.VarChar(24)
+  ownerId String @db.Uuid
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  closed Boolean @default(false)
+  selectedProposalId String? @unique @db.Uuid
+  selectedProposal Proposal? @relation("SelectedProposal", fields: [selectedProposalId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  members RoomMember[]
+  proposals Proposal[] @relation("RoomProposals")
+  votes Vote[]
+}
+
+model RoomMember {
+  roomId String @db.Uuid
+  userId String @db.Uuid
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+  @@id([roomId, userId])
+  @@index([userId])
+}
+
+model Proposal {
+  id String @id @default(uuid()) @db.Uuid
+  roomId String @db.Uuid
+  room Room @relation("RoomProposals", fields: [roomId], references: [id], onDelete: Cascade)
+  selectedIn Room? @relation("SelectedProposal")
+  occurrenceId String @db.Uuid
+  occurrence Occurrence @relation(fields: [occurrenceId], references: [id], onDelete: Restrict)
+  authorId String @db.Uuid
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes Vote[]
+  @@unique([roomId, occurrenceId])
+  @@unique([id, roomId])
+}
+
+model Vote {
+  roomId String @db.Uuid
+  userId String @db.Uuid
+  proposalId String @db.Uuid
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposal Proposal @relation(fields: [proposalId, roomId], references: [id, roomId], onDelete: Cascade)
+  @@id([roomId, userId])
 }

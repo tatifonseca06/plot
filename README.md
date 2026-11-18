@@ -6,9 +6,9 @@
 
 **Organiza experiencias con amigos, desde la idea hasta un plan real.**
 
-Plot es un proyecto universitario de Ingeniería Web. Esta primera entrega implementa **registro, login y un CRUD de experiencias**, con una estructura MVC sencilla, una API de Express y persistencia en PostgreSQL.
+Plot es un proyecto universitario de Ingeniería Web. La versión final implementa **autenticación, catálogo público, moderación, fechas con cupos, salas, votaciones, reservas, misiones y reseñas**, con MVC, servicios transaccionales, una API de Express y persistencia en PostgreSQL.
 
-El concepto general contempla experiencias grupales; la versión actual permite a cada organizador administrar sus propias experiencias. La aplicación está disponible en [Plot](https://plot-sable-kappa.vercel.app).
+Cualquier cuenta puede crear planes e invitar amigos. El grupo decide los detalles y cada persona confirma su cupo. La implementación de los módulos finales está preparada y verificada localmente. El despliegue de [Plot](https://plot-sable-kappa.vercel.app) aplica las migraciones comprometidas durante la compilación de producción antes de activar la nueva API.
 
 ## Contenido
 
@@ -26,16 +26,18 @@ El concepto general contempla experiencias grupales; la versión actual permite 
 
 ## Funcionalidades
 
-- Registrar cuentas de participante u organizador.
+- Registrar una cuenta que permite crear y participar en planes.
 - Iniciar sesión con correo y contraseña y cerrar sesión.
-- Crear, listar, consultar, editar y eliminar experiencias propias como organizador.
+- Crear planes privados o públicos, invitar amigos y administrar los propios.
+- Usar un panel con tarjetas, filtros, reservas y próximas fechas, y un creador guiado con vista previa.
+- Guardar ciudad, itinerario, qué incluye y recomendaciones junto con la primera fecha y las misiones.
 - Elegir categoría y subcategoría mediante dropdowns dependientes cargados desde PostgreSQL.
 - Validar título, categoría y descripción tanto en los formularios como en el backend.
 - Conservar los registros en PostgreSQL después de recargar o cerrar la aplicación.
 - Proteger la API con sesiones y comprobar el propietario al consultar, editar o eliminar.
 - Mostrar formularios adaptables y una lista completa con desplazamiento de la página.
 
-Las contraseñas se guardan mediante scrypt con sal aleatoria. Las sesiones tienen vencimiento y se utilizan mediante cookies HttpOnly. Los participantes pueden autenticarse, pero no acceder al CRUD reservado a organizadores.
+Las contraseñas se guardan mediante scrypt con sal aleatoria. Las sesiones tienen vencimiento y se utilizan mediante cookies HttpOnly. Cualquier usuario autenticado puede crear planes; únicamente el propietario administra los suyos.
 
 ## Tecnologías
 
@@ -67,7 +69,7 @@ flowchart LR
 - **Vista:** páginas y componentes de Next.js.
 - **Controlador:** funciones de Express que reciben peticiones, validan los datos, consultan Prisma y construyen respuestas.
 
-En esta primera versión los controladores contienen también reglas como asignar y comprobar el propietario. No hay capas adicionales de servicios o repositorios. Las vistas están separadas y consumen la API JSON del mismo proyecto.
+Los controladores validan entradas y traducen resultados a HTTP. Los servicios de reservas y salas concentran las reglas transaccionales. `atomic` encapsula el aislamiento Serializable y los reintentos acotados ante conflictos de PostgreSQL; evita sobreventa y protege el cierre de votaciones. Prisma implementa el acceso a datos. Las vistas consumen la API JSON. Se usa el patrón Service Layer para separar estos flujos del transporte, sin añadir repositorios que solo repitan las llamadas del ORM.
 
 ```text
 plot/
@@ -77,7 +79,8 @@ plot/
 │   │   └── migrations/           # Cambios versionados de PostgreSQL
 │   ├── src/
 │   │   ├── routes/               # URL y método → controlador
-│   │   ├── controllers/          # Autenticación y CRUD
+│   │   ├── controllers/          # Autenticación, CRUD y comunidad
+│   │   ├── services/             # Reservas, salas y transacciones
 │   │   ├── middleware/auth.ts    # Sesión y permisos
 │   │   ├── security/password.ts  # Hash de contraseñas
 │   │   ├── validations.ts        # Validación de entradas
@@ -174,9 +177,9 @@ docker compose stop db
 
 ## Cómo probar la aplicación
 
-1. Abrir `/registro` y crear una cuenta de tipo **Organizador**.
+1. Abrir `/registro` y crear una cuenta.
 2. Iniciar sesión con el correo y la contraseña registrados.
-3. Pulsar **Nueva experiencia**, completar los campos y guardar.
+3. Pulsar **Crear un plan**, completar los tres pasos y compartir la invitación.
 4. Recargar para comprobar la persistencia.
 5. Editar la experiencia y comprobar sus cambios.
 6. Eliminarla mediante la confirmación.
@@ -184,7 +187,7 @@ docker compose stop db
 
 No existen cuentas preinsertadas ni contraseñas públicas de demostración.
 
-La página consulta la sesión y redirige al login cuando no es válida. Independientemente de esa redirección en el navegador, **todos los endpoints del CRUD comprueban la sesión en Express** y rechazan el acceso sin autenticación con HTTP 401. Los participantes reciben 403 y un recurso ajeno responde 404.
+La página consulta la sesión y redirige al login cuando no es válida. Independientemente de esa redirección en el navegador, **todos los endpoints del CRUD comprueban la sesión en Express** y rechazan el acceso sin autenticación con HTTP 401. Un recurso privado ajeno responde 404.
 
 ## API
 
@@ -241,7 +244,7 @@ npm --prefix backend test
 
 El comando de creación de base solo se ejecuta una vez. Las pruebas se niegan a utilizar otra base y limpian únicamente sus propios usuarios y registros.
 
-**Resultado comprobado:** 17 subcasos funcionales correctos (18 pruebas contando el caso padre), incluyendo registro, login, CRUD persistente, listado completo, acceso a recursos ajenos, roles, vencimiento y cierre de sesión. También se comprobó la integración HTTP de Next.js con Express y PostgreSQL.
+**Resultado comprobado:** 40 pruebas correctas (36 subcasos y 4 casos padre). `plans.test.ts` comprueba creación inmediata, privacidad, invitaciones, votación, confirmación y edición de planes entre amigos. `api.test.ts` cubre autenticación, CRUD, roles y persistencia. `community.test.ts` cubre el flujo final: privacidad de borradores y salas, moderación, fechas, votos únicos, reservas simultáneas, cancelaciones, asistencia, misiones y reseñas. Se ejecutan contra PostgreSQL real en `plot_test`, con limpieza de los registros creados por cada prueba.
 
 No se presenta esta comprobación HTTP como una prueba visual automatizada en navegador.
 
@@ -253,7 +256,7 @@ No se presenta esta comprobación HTTP como una prueba visual automatizada en na
 | El backend no conecta a PostgreSQL | Ejecutar `docker compose ps` y revisar `DATABASE_URL`, contraseña y puerto 5433. |
 | La interfaz muestra error de conexión | Comprobar que Express esté funcionando en el puerto 4000. |
 | Una escritura devuelve 403 por origen | Abrir exactamente `http://localhost:3000` o ajustar `FRONTEND_URL` al origen utilizado. |
-| No aparece Nueva experiencia | La cuenta debe ser de tipo Organizador. |
+| No aparece Crear un plan | Iniciar sesión y abrir `/experiencias`. Cualquier cuenta puede crear. |
 | Aparece 429 al iniciar sesión | El límite es de veinte solicitudes de login/registro por IP cada quince minutos; esperar antes de reintentar. |
 | Cambiar la contraseña del `.env` no cambia la de PostgreSQL | La contraseña inicial solo configura un volumen nuevo; no modifica automáticamente un volumen ya creado. |
 
@@ -269,13 +272,22 @@ El proyecto de Vercel está conectado al repositorio de GitHub. La configuració
 - `FRONTEND_URL`: `https://plot-sable-kappa.vercel.app`.
 - `NODE_ENV`: `production`.
 
-Las migraciones se aplican con `npm --prefix backend run db:deploy`, usando la conexión del entorno correspondiente. No se deben ejecutar las pruebas locales de `plot_test` contra producción.
+Vercel aplica las migraciones en producción con `backend/scripts/vercel-build.mjs`, usando la conexión protegida del entorno. Una migración fallida detiene la publicación. Para aplicarlas manualmente se usa `npm --prefix backend run db:deploy`, con la conexión del entorno correspondiente. No se deben ejecutar las pruebas locales de `plot_test` contra producción.
 
 Se verificaron por HTTP las páginas, registro, login, cookies seguras, CRUD de organizador y administrador, permisos, rechazo de orígenes ajenos y cierre de sesión. Las cuentas y experiencias temporales de comprobación se eliminaron al finalizar.
 
 ## Alcance y documentación
 
-Esta entrega cubre el módulo básico de **CRUD y Login con MVC**. Quedan pendientes el catálogo público, moderación, sesiones de experiencias, salas, votaciones, reservas, misiones y reseñas. Los patrones y mejoras SOLID de la entrega posterior no se presentan como implementados.
+Los módulos finales están implementados. Consulta [la guía de entrega y demostración](ENTREGA_FINAL.md) para los recorridos, permisos, decisiones de alcance y publicación.
+
+- Catálogo público con búsqueda, categorías, paginación, fechas y reseñas.
+- Moderación de publicaciones y reseñas por administrador.
+- Sesiones de experiencias (fechas) con inicio, fin, lugar, cupos, cancelación y finalización.
+- Salas privadas con invitación por código, propuestas, un voto por miembro y elección del plan ganador.
+- Reservas individuales persistentes, sin duplicados ni sobreventa, con cancelación antes del inicio.
+- Asistencia confirmada por el organizador, misiones con puntos y reseñas verificadas.
+
+Las reservas no procesan pagos. La votación no reserva automáticamente al grupo. Los puntos de misiones no son canjeables. La revisión visual en navegador sigue pendiente porque no había un navegador conectado durante la implementación.
 
 - [Notas del backend](backend/README.md).
 - [Notas del frontend](frontend/README.md).
